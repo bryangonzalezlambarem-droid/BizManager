@@ -1,2 +1,2 @@
-# Proyecto_Desarrollo_Backend_Dos
+# Proyecto BizManager
 Un repositorio para guardar un proyecto escolar 

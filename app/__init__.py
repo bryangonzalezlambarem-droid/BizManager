@@ -6,13 +6,13 @@ db = SQLAlchemy()
 def create_app():
     app = Flask(__name__)
     
-    # Configuración desde config.py
+    # B. G. L. 22/08/2025 Configuracion desde config.py
     app.config.from_object("app.config.Config")
 
-    # Inicializar la base de datos
+    # B. G. L. 22/08/2025 Inicializar la base de datos
     db.init_app(app)
 
-    # Registrar Blueprints (controladores)
+    # B. G. L. 22/08/2025 Registrar Blueprints (controladores)
     from app.controllers.customer_controller import customer_bp
     from app.controllers.product_controller import product_bp
     from app.controllers.salesperson_controller import salesperson_bp

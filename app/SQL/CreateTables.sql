@@ -51,7 +51,7 @@ CREATE TABLE OrderDetails (
 	unit_price DECIMAL(10,2) NOT NULL,
 	FOREIGN KEY (order_id) REFERENCES Orders(order_id),
 	FOREIGN KEY (product_id) REFERENCES Products(product_id),
-	FOREIGN KEY (salesman_id1) REFERENCES Salespeople(salesman_id)
+	FOREIGN KEY (salesman_id) REFERENCES Salespeople(salesman_id)
 );
 
 -- B. G. L. 22/08/2025  Crear tabla de Historial de Estados de Pedido

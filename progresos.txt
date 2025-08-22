@@ -1,0 +1,31 @@
+1️⃣ Modelo (Model)
+
+Es la base del proyecto porque define cómo se estructuran y persisten los datos.
+
+Aquí conectamos Flask con la BD (SQLAlchemy) y definimos las entidades:
+
+Customer
+
+Product
+
+Salesperson
+
+Order
+
+OrderDetail
+
+⚡ Ventaja: Si tienes los modelos listos, los controladores solo necesitan invocar métodos y no reinventar la rueda.
+
+2️⃣ Controlador (Controller)
+
+Una vez los modelos están listos, puedes construir las rutas Flask (/customers, /orders, etc.).
+
+Los controladores usan los modelos para aplicar la lógica de negocio y devolver JSON o HTML.
+
+3️⃣ Vista (View)
+
+Es la capa más flexible.
+
+Si usas Jinja2: creamos plantillas (customers.html, orders.html, etc.) que rendericen datos.
+
+Si solo trabajas API REST: aquí casi no hay trabajo, la vista es simplemente el JSON que devuelven los controladores.
