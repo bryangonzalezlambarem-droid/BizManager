@@ -1,6 +1,10 @@
 import os
+from dotenv import load_dotenv
+
+load_dotenv()
 
 class Config:
-    SECRET_KEY = os.getenv("SECRET_KEY", "dev_secret")
-    SQLALCHEMY_DATABASE_URI = os.getenv("DATABASE_URL", "mssql+pyodbc://user:password@localhost/BizManager?driver=ODBC+Driver+17+for+SQL+Server")
+    SQLALCHEMY_DATABASE_URI = (
+        "mssql+pyodbc://sa:Te-lambaremb29@localhost\\SQLEXPRESS/BizManager?driver=ODBC+Driver+17+for+SQL+Server"
+    )
     SQLALCHEMY_TRACK_MODIFICATIONS = False

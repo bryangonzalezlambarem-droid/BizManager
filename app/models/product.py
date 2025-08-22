@@ -1,6 +1,6 @@
 from app import db
 
-# B. G. L. 22/08/2025 Crear modelo para conectarse a la tabla Salesperson
+# B. G. L. 22/08/2025 Crear modelo para conectarse a la tabla Product
 class Product(db.Model):
     __tablename__ = 'Products'
     
