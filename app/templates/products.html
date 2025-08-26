@@ -1,0 +1,43 @@
+{% extends "base.html" %}
+
+{% block title %}Productos - BizManager{% endblock %}
+
+{% block content %}
+<h1>Productos</h1>
+
+<button id="btn-new-product">Nuevo Producto</button>
+
+<table id="products-table">
+    <thead>
+        <tr>
+            <th>ID</th>
+            <th>Nombre</th>
+            <th>Descripción</th>
+            <th>Precio</th>
+            <th>Stock</th>
+            <th>Vendedor</th>
+            <th>Acciones</th>
+        </tr>
+    </thead>
+    <tbody>
+        {% for product in products %}
+        <tr>
+            <td>{{ product.product_id }}</td>
+            <td>{{ product.name }}</td>
+            <td>{{ product.description }}</td>
+            <td>{{ product.price }}</td>
+            <td>{{ product.stock }}</td>
+            <td>{{ product.salesperson_name }}</td>
+            <td>
+                <button class="btn-view" data-id="{{ product.product_id }}">Ver</button>
+                <button class="btn-edit" data-id="{{ product.product_id }}">Editar</button>
+            </td>
+        </tr>
+        {% endfor %}
+    </tbody>
+</table>
+{% endblock %}
+
+{% block scripts %}
+<script src="{{ url_for('static', filename='js/products.js') }}"></script>
+{% endblock %}

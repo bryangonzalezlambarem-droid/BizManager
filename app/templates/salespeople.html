@@ -1,0 +1,41 @@
+{% extends "base.html" %}
+
+{% block title %}Vendedores - BizManager{% endblock %}
+
+{% block content %}
+<h1>Vendedores</h1>
+
+<button id="btn-new-salesperson">Nuevo Vendedor</button>
+
+<table id="salespeople-table">
+    <thead>
+        <tr>
+            <th>ID</th>
+            <th>Nombre</th>
+            <th>Email</th>
+            <th>Teléfono</th>
+            <th>Fecha de Registro</th>
+            <th>Acciones</th>
+        </tr>
+    </thead>
+    <tbody>
+        {% for sp in salespeople %}
+        <tr>
+            <td>{{ sp.salesman_id }}</td>
+            <td>{{ sp.name }}</td>
+            <td>{{ sp.email }}</td>
+            <td>{{ sp.phone }}</td>
+            <td>{{ sp.registration_date }}</td>
+            <td>
+                <button class="btn-view" data-id="{{ sp.salesman_id }}">Ver</button>
+                <button class="btn-edit" data-id="{{ sp.salesman_id }}">Editar</button>
+            </td>
+        </tr>
+        {% endfor %}
+    </tbody>
+</table>
+{% endblock %}
+
+{% block scripts %}
+<script src="{{ url_for('static', filename='js/salespeople.js') }}"></script>
+{% endblock %}

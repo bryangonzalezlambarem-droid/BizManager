@@ -6,7 +6,7 @@ from app.models.product import Product
 product_bp = Blueprint("product_bp", __name__)
 
 # B. G. L. 25/08/2025 Crear producto
-@product_bp.route("/products", methods={"POST"})
+@product_bp.route("/products", methods=["POST"])
 def create_product():
     data = request.get_json()
     new_product = Product(
@@ -21,19 +21,32 @@ def create_product():
 
 # B. G. L. 25/08/2025 Obtener todos los productos 
 @product_bp.route("/products", methods=["GET"])
-def get_product():
+def get_products():
     products = Product.query.all()
     return jsonify([
-        {"id": p.id, "name": p.name, "desciption": p.description, "price": p.price, "stock": p.stock}
+        {
+            "id": p.id,
+            "name": p.name,
+            "description": p.description, 
+            "price": p.price,
+            "stock": p.stock
+        }
         for p in products
     ])
-    
+
 # B. G. L. 25/08/2025 Obtener un producto por ID
+@product_bp.route("/products/<int:id>", methods=["GET"])
 def get_product(id):
     product = Product.query.get_or_404(id)
-    return jsonify({"id": product.id, "name": product.name, "desciption": product.description,  "price": product.price, "stock": product.stock})
+    return jsonify({
+        "id": product.id,
+        "name": product.name,
+        "description": product.description,  
+        "price": product.price,
+        "stock": product.stock
+    })
 
-# B. G. L. 25/08/2025 Obtener un producto por ID Actualizar producto
+# B. G. L. 25/08/2025 Actualizar producto
 @product_bp.route("/products/<int:id>", methods=["PUT"])
 def update_product(id):
     product = Product.query.get_or_404(id)

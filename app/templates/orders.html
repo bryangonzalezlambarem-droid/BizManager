@@ -1,0 +1,75 @@
+{% extends "base.html" %}
+
+{% block title %}Pedidos - BizManager{% endblock %}
+
+{% block content %}
+<h1>Pedidos</h1>
+
+<!-- B. G. L. 25/08/2025 Boton para crear un nuevo pedido -->
+<button id="btn-new-order">Nuevo Pedido</button>
+
+<!-- B. G. L. 25/08/2025 Tabla de pedidos -->
+<table id="orders-table">
+    <thead>
+        <tr>
+            <th>ID</th>
+            <th>Cliente</th>
+            <th>Vendedor</th>
+            <th>Fecha</th>
+            <th>Estado</th>
+            <th>Total</th>
+            <th>Acciones</th>
+        </tr>
+    </thead>
+    <tbody>
+        {% for order in orders %}
+        <tr>
+            <td>{{ order.order_id }}</td>
+            <td>{{ order.customer_name }}</td>
+            <td>{{ order.salesperson_name }}</td>
+            <td>{{ order.order_date }}</td>
+            <td>{{ order.status }}</td>
+            <td>{{ order.total_amount }}</td>
+            <td>
+                <button class="btn-view" data-id="{{ order.order_id }}">Ver</button>
+                <button class="btn-edit" data-id="{{ order.order_id }}">Editar</button>
+            </td>
+        </tr>
+        {% endfor %}
+    </tbody>
+</table>
+
+<!-- B. G. L. 25/08/2025 Modal o seccion para crear/editar pedidos -->
+<div id="order-form-container" style="display:none;">
+    <h2 id="form-title">Nuevo Pedido</h2>
+    <form id="order-form">
+        <label for="customer_id">Cliente:</label>
+        <select id="customer_id" name="customer_id">
+            {% for customer in customers %}
+            <option value="{{ customer.customer_id }}">{{ customer.name }}</option>
+            {% endfor %}
+        </select>
+
+        <label for="salesperson_id">Vendedor:</label>
+        <select id="salesperson_id" name="salesperson_id">
+            {% for sp in salespeople %}
+            <option value="{{ sp.salesman_id }}">{{ sp.name }}</option>
+            {% endfor %}
+        </select>
+
+        <!-- B. G. L. 25/08/2025 Aqui se pueden agregar productos dinamicamente con JS -->
+        <div id="order-details">
+            <label>Productos:</label>
+            <!-- B. G. L. 25/08/2025 JS agregara inputs de producto y cantidad -->
+        </div>
+
+        <button type="submit">Guardar Pedido</button>
+        <button type="button" id="cancel-form">Cancelar</button>
+    </form>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script src="{{ url_for('static', filename='js/orders.js') }}"></script>
+</script>
+{% endblock %}

@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %}BizManager{% endblock %}</title>
+    <!-- B. G. L. 25/08/2025 CSS -->
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+</head>
+<body>
+    <!-- B. G. L. 25/08/2025 Header / Navbar -->
+    <header>
+        <nav>
+            <ul>
+                <li><a href="{{ url_for('customer_bp.get_customers') }}">Clientes</a></li>
+                <li><a href="{{ url_for('product_bp.get_products') }}">Productos</a></li>
+                <li><a href="{{ url_for('salesperson_bp.get_salespersons') }}">Vendedores</a></li>
+                <li><a href="{{ url_for('order_bp.get_orders') }}">Pedidos</a></li>
+            </ul>
+        </nav>
+    </header>
+
+    <!-- B. G. L. 25/08/2025 Main content -->
+    <main>
+        {% block content %}
+        <!-- B. G. L. 25/08/2025 Aquí se inyectara el contenido de cada pagina -->
+        {% endblock %}
+    </main>
+
+    <!-- B. G. L. 25/08/2025 Footer -->
+    <footer>
+        <p>&copy; 2025 BizManager. Todos los derechos reservados.</p>
+    </footer>
+
+    <!-- B. G. L. 25/08/2025 JS -->
+    <script src="{{ url_for('static', filename='js/app.js') }}"></script>
+    {% block scripts %}
+    <!-- B. G. L. 25/08/2025 Scripts adicionales por pagina -->
+    {% endblock %}
+</body>
+</html>

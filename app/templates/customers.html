@@ -1,0 +1,43 @@
+{% extends "base.html" %}
+
+{% block title %}Clientes - BizManager{% endblock %}
+
+{% block content %}
+<h1>Clientes</h1>
+
+<!-- B. G. L. 25/08/2025 Boton para crear un nuevo cliente -->
+<button id="btn-new-customer">Nuevo Cliente</button>
+
+<!-- B. G. L. 25/08/2025 Mostar la tabla -->
+<table id="customers-table">
+    <thead>
+        <tr>
+            <th>ID</th>
+            <th>Nombre</th>
+            <th>Email</th>
+            <th>Teléfono</th>
+            <th>Dirección</th>
+            <th>Acciones</th>
+        </tr>
+    </thead>
+    <tbody>
+        {% for customer in customers %}
+        <tr>
+            <td>{{ customer.customer_id }}</td>
+            <td>{{ customer.name }}</td>
+            <td>{{ customer.email }}</td>
+            <td>{{ customer.phone }}</td>
+            <td>{{ customer.adress }}</td>
+            <td>
+                <button class="btn-view" data-id="{{ customer.customer_id }}">Ver</button>
+                <button class="btn-edit" data-id="{{ customer.customer_id }}">Editar</button>
+            </td>
+        </tr>
+        {% endfor %}
+    </tbody>
+</table>
+{% endblock %}
+
+{% block scripts %}
+<script src="{{ url_for('static', filename='js/customers.js') }}"></script>
+{% endblock %}
