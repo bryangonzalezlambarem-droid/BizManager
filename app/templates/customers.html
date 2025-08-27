@@ -21,21 +21,23 @@
         </tr>
     </thead>
     <tbody>
-        {% for customer in customers %}
-        <tr>
-            <td>{{ customer.customer_id }}</td>
-            <td>{{ customer.name }}</td>
-            <td>{{ customer.email }}</td>
-            <td>{{ customer.phone }}</td>
-            <td>{{ customer.adress }}</td>
-            <td>
-                <button class="btn-view" data-id="{{ customer.customer_id }}">Ver</button>
-                <button class="btn-edit" data-id="{{ customer.customer_id }}">Editar</button>
-            </td>
-        </tr>
-        {% endfor %}
+
     </tbody>
 </table>
+
+<!--  B. G. L. 27/08/2025 Formulario oculto -->
+<div id="customer-form-container" style="display:none; margin-top:20px;">
+    <h3 id="form-title">Nuevo Cliente</h3>
+    <form id="customer-form">
+        <input type="hidden" id="customer-id">
+        <label>Nombre: <input type="text" id="customer-name" required></label><br>
+        <label>Email: <input type="email" id="customer-email" required></label><br>
+        <label>Teléfono: <input type="text" id="customer-phone"></label><br>
+        <label>Dirección: <input type="text" id="customer-adress"></label><br>
+        <button type="submit">Guardar</button>
+        <button type="button" id="cancel-btn">Cancelar</button>
+    </form>
+</div>
 {% endblock %}
 
 {% block scripts %}

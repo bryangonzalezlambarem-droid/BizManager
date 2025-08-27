@@ -23,20 +23,32 @@ def create_salesperson():
 def get_salespersons():
     salespersons = Salesperson.query.all()
     return jsonify([
-        {"id": s.id, "name": s.name, "email": s.email, "phone": s.phone}
+        {
+            "salesman_id": s.salesman_id,
+            "name": s.name,
+            "email": s.email,
+            "phone": s.phone,
+            "registration_date": s.registration_date.isoformat() if s.registration_date else None
+        }
         for s in salespersons
     ])
 
 # B. G. L. 25/08/2025 Obtener un vendedor por ID
 @salesperson_bp.route("/salespersons/<int:id>", methods=["GET"])
-def get_salesperson(id):
-    salesperson = Salesperson.query.get_or_404(id)
-    return jsonify({"id": salesperson.id, "name": salesperson.name, "email": salesperson.email, "phone": salesperson.phone})
+def get_salesperson(salesman_id):
+    salesperson = Salesperson.query.get_or_404(salesman_id)
+    return jsonify({
+        "salesman_id": salesperson.salesman_id,
+        "name": salesperson.name,
+        "email": salesperson.email,
+        "phone": salesperson.phone,
+        "registration_date": salesperson.registration_date.isoformat() if salesperson.registration_date else None
+    })
 
 # B. G. L. 25/08/2025 Actualizar vendedor
 @salesperson_bp.route("/salespersons/<int:id>", methods=["PUT"])
-def update_salesperson(id):
-    salesperson = Salesperson.query.get_or_404(id)
+def update_salesperson(salesman_id):
+    salesperson = Salesperson.query.get_or_404(salesman_id)
     data = request.get_json()
     salesperson.name = data.get("name", salesperson.name)
     salesperson.email = data.get("email", salesperson.email)
@@ -46,8 +58,8 @@ def update_salesperson(id):
 
 # B. G. L. 25/08/2025 Eliminar vendedor
 @salesperson_bp.route("/salespersons/<int:id>", methods=["DELETE"])
-def delete_salesperson(id):
-    salesperson = Salesperson.query.get_or_404(id)
+def delete_salesperson(salesman_id):
+    salesperson = Salesperson.query.get_or_404(salesman_id)
     db.session.delete(salesperson)
     db.session.commit()
     return jsonify({"message": "Vendedor eliminado"})

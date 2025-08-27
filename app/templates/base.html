@@ -6,6 +6,7 @@
     <title>{% block title %}BizManager{% endblock %}</title>
     <!-- B. G. L. 25/08/2025 CSS -->
     <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+    <meta name="description" content="BizManager - Sistema de gestión de clientes, productos, vendedores y pedidos">
 </head>
 <body>
     <!-- B. G. L. 25/08/2025 Header / Navbar -->
@@ -20,11 +21,22 @@
         </nav>
     </header>
 
+    <!-- B. G. L. 27/08/2025 Mensajes globales -->
+    <div id="global-messages"></div>
+
+    <!-- B. G. L. 27/08/2025 Loader global -->
+    <div id="global-loader" style="display:none;">
+        <div class="spinner"></div>
+        <p>Cargando...</p>
+    </div>
+
     <!-- B. G. L. 25/08/2025 Main content -->
     <main>
-        {% block content %}
-        <!-- B. G. L. 25/08/2025 Aquí se inyectara el contenido de cada pagina -->
-        {% endblock %}
+        <div>
+            {% block content %}
+            <!-- B. G. L. 25/08/2025 Aquí se inyectara el contenido de cada pagina -->
+            {% endblock %}
+        </div>
     </main>
 
     <!-- B. G. L. 25/08/2025 Footer -->
