@@ -1,0 +1,81 @@
+POST - Crear un nuevo cliente
+URL: http://localhost:5000/customers/
+Método: POST
+{
+    "name": "Juan Pérez",
+    "email": "juan.perez@empresa.com",
+    "phone": "+573001234567",
+    "adress": "Calle 123 #45-67"
+}
+Casos de prueba:
+Caso exitoso: Todos los campos válidos
+Error: Falta campo "name"
+Error: Falta campo "email"
+Error: Email inválido ("juan@empresa")
+Error: Teléfono inválido ("123")
+Error: Email duplicado
+------------------------------------------------------------------------------------------------------------------------------------
+GET - Obtener todos los clientes (con paginación)
+URL: http://localhost:5000/customers/
+Método: GET
+Parámetros de query:
+page=1 (opcional, default: 1)
+per_page=10 (opcional, default: 10, máximo: 100)
+Ejemplos:
+GET /customers/ (página 1, 10 registros)
+GET /customers/?page=2&per_page=5 (página 2, 5 registros)
+Respuesta esperada:
+{
+    "customers": [
+        {
+            "id": 1,
+            "name": "Juan Pérez",
+            "email": "juan.perez@empresa.com",
+            "phone": "+573001234567",
+            "adress": "Calle 123 #45-67"
+        }
+    ],
+    "total": 15,
+    "pages": 2,
+    "current_page": 1
+}
+Casos de prueba:
+Caso exitoso: Parámetros válidos
+Error: page < 1
+Error: per_page < 1
+Error: per_page > 100
+------------------------------------------------------------------------------------------------------------------------------------
+GET - Obtener cliente por ID
+URL: http://localhost:5000/customers/1
+Método: GET
+Casos de prueba:
+Caso exitoso: ID existente (1)
+Error: ID no existente (999) - Debe retornar 404
+Error: ID inválido (0 o negativo)
+------------------------------------------------------------------------------------------------------------------------------------
+PUT - Actualizar cliente
+URL: http://localhost:5000/customers/1
+Método: PUT
+Headers:
+{
+    "name": "Juan Carlos Pérez",
+    "email": "juan.c.perez@empresa.com",
+    "phone": "+573009876543",
+    "adress": "Avenida Principal #100-20"
+}
+Casos de prueba:
+Caso exitoso: Actualizar todos los campos
+Caso exitoso: Actualizar solo el nombre
+Caso exitoso: Actualizar solo el teléfono
+Error: Email inválido
+Error: Teléfono inválido
+Error: Email duplicado (en otro cliente)
+Error: Cliente no existe
+------------------------------------------------------------------------------------------------------------------------------------
+DELETE - Eliminar cliente
+URL: http://localhost:5000/customers/1
+Método: DELETE
+Casos de prueba:
+Caso exitoso: Eliminar cliente existente
+Error: Eliminar cliente que no existe
+Error: ID inválido

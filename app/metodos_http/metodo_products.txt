@@ -1,0 +1,68 @@
+POST - Crear un nuevo producto
+URL: http://localhost:5000/products
+Método: POST
+{
+    "name": "Laptop Gaming",
+    "description": "Laptop para gaming de alta gama",
+    "price": 1500.99,
+    "stock": 25
+}
+Casos de prueba:
+Caso exitoso: Todos los campos válidos
+Error: Falta campo "name"
+Error: Falta campo "description"
+Error: Falta campo "price"
+Error: Falta campo "stock"
+Error: Precio negativo (-100)
+Error: Precio no numérico ("cien")
+Error: Stock negativo (-5)
+Error: Stock no entero (10.5)
+------------------------------------------------------------------------------------------------------------------------------------
+GET - Obtener todos los productos
+URL: http://localhost:5000/products
+Método: GET
+Respuesta esperada:
+[
+    {
+        "id": 1,
+        "name": "Laptop Gaming",
+        "description": "Laptop para gaming de alta gama",
+        "price": 1500.99,
+        "stock": 25
+    }
+]
+------------------------------------------------------------------------------------------------------------------------------------
+GET - Obtener producto por ID
+URL: http://localhost:5000/products/1
+Método: GET
+Casos de prueba:
+Caso exitoso: ID existente (1)
+Error: ID no existente (999) - Debe retornar 404
+------------------------------------------------------------------------------------------------------------------------------------
+PUT - Actualizar producto
+URL: http://localhost:5000/products/1
+Método: PUT
+Headers:
+{
+    "name": "Laptop Gaming Pro",
+    "price": 1699.99,
+    "stock": 30
+}
+Casos de prueba:
+Caso exitoso: Actualizar todos los campos
+Caso exitoso: Actualizar solo el nombre
+Caso exitoso: Actualizar solo el precio
+Caso exitoso: Actualizar solo el stock
+Caso exitoso: Actualizar solo la descripción
+Error: Precio negativo
+Error: Stock negativo
+Error: Precio no numérico
+Error: Stock no entero
+Error: Producto no exist
+------------------------------------------------------------------------------------------------------------------------------------
+DELETE - Eliminar producto
+URL: http://localhost:5000/products/1
+Método: DELETE
+Casos de prueba:
+Caso exitoso: Eliminar producto existente
+Error: Eliminar producto que no existe

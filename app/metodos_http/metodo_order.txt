@@ -1,0 +1,85 @@
+POST - Crear un nuevo pedido
+URL: http://localhost:5000/orders
+Método: POST
+{
+    "customer_id": 1,
+    "status": "Pending",
+    "details": [
+        {
+            "product_id": 1,
+            "quantity": 2,
+            "salesman_id": 1
+        },
+        {
+            "product_id": 2,
+            "quantity": 1,
+            "salesman_id": 1
+        }
+    ]
+}
+Casos de prueba:
+Caso exitoso: Customer existente, productos con stock suficiente
+Error: Falta customer_id
+Error: Lista de detalles vacía
+Error: Producto no existe
+Error: Stock insuficiente
+Error: Detalle sin product_id o quantity
+------------------------------------------------------------------------------------------------------------------------------------
+GET - Obtener todos los pedidos
+URL: http://localhost:5000/orders
+Método: GET
+Respuesta esperada:
+[
+    {
+        "order_id": 1,
+        "customer_id": 1,
+        "order_date": "2024-01-15T10:30:00",
+        "status": "Pending",
+        "total_amount": 150.50,
+        "details": [
+            {
+                "detail_id": 1,
+                "product_id": 1,
+                "salesman_id": 1,
+                "quantity": 2,
+                "unit_price": 50.00
+            }
+        ]
+    }
+]
+------------------------------------------------------------------------------------------------------------------------------------
+GET - Obtener pedido por ID
+URL: http://localhost:5000/orders/1
+Método: GET
+Casos de prueba:
+Caso exitoso: ID existente (1)
+Error: ID no existente (999) - Debe retornar 404
+------------------------------------------------------------------------------------------------------------------------------------
+PUT - Cambiar estado de pedido
+URL: http://localhost:5000/orders/1/status
+Método: PUT
+{
+    "new_status": "Processing",
+    "changed_by": "admin_user"
+}
+Casos de prueba:
+Caso exitoso: Estado válido (Processing)
+Caso exitoso: Estado válido (Shipped)
+Caso exitoso: Estado válido (Completed)
+Error: Estado inválido ("InvalidStatus")
+Error: Mismo estado actual
+Error: Pedido no existe
+------------------------------------------------------------------------------------------------------------------------------------
+GET - Obtener historial de pedido
+URL: http://localhost:5000/orders/1/history
+Método: GET
+[
+    {
+        "history_id": 1,
+        "order_id": 1,
+        "old_status": "Pending",
+        "new_status": "Processing",
+        "change_date": "2024-01-15T11:30:00",
+        "changed_by": "admin_user"
+    }
+]

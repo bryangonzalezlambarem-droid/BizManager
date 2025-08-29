@@ -1,0 +1,52 @@
+URL: http://localhost:5000/salespersons (SEGUN DONDE ESTE CORRIENDO EL BACKEND)
+------------------------------------------------------------------------------------------------------------------------------------
+POST - Crear un nuevo vendedor
+JSON:
+{
+    "name": "Juan Pérez",
+    "email": "juan.perez@empresa.com",
+    "phone": "+1234567890"
+}
+Casos de prueba:
+Caso exitoso: Los 3 campos completos con datos válidos
+Error validación: Falta campo "name"
+Error validación: Email inválido ("juan@empresa")
+Error validación: Teléfono muy corto ("123")
+Error validación: Teléfono muy largo ("1234567890123456")
+------------------------------------------------------------------------------------------------------------------------------------
+GET - Obtener todos los vendedores
+URL: http://localhost:5000/salespersons
+RESPUESTA ESPERADA
+[
+    {
+        "salesman_id": 1,
+        "name": "Juan Pérez",
+        "email": "juan.perez@empresa.com",
+        "phone": "+1234567890",
+        "registration_date": "2024-01-15T10:30:00"
+    }
+]
+------------------------------------------------------------------------------------------------------------------------------------
+GET - Obtener vendedor por ID
+URL: http://localhost:5000/salespersons/1 
+Casos de prueba:
+Caso exitoso: ID existente (1)
+Error: ID no existente (999) - Debe retornar 404
+------------------------------------------------------------------------------------------------------------------------------------
+PUT - Actualizar vendedor
+URL: http://localhost:5000/salespersons/1
+Método: PUT
+{
+    "name": "Juan Carlos Pérez",
+    "email": "juan.c.perez@empresa.com",
+    "phone": "+1234567899"
+}
+Casos de prueba:
+Caso exitoso: Actualizar todos los campos
+Caso exitoso: Actualizar solo el nombre
+Caso exitoso: Actualizar solo el email
+Caso exitoso: Actualizar solo el teléfono
+Error validación: Email inválido
+Error validación: Teléfono inválido
+Error: ID no existente
+------------------------------------------------------------------------------------------------------------------------------------
