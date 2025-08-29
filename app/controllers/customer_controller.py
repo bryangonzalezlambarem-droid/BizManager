@@ -1,56 +1,235 @@
 from flask import Blueprint, request, jsonify
 from app import db
 from app.models.customer import Customer
+from sqlalchemy.exc import SQLAlchemyError, IntegrityError
+import re
+from datetime import datetime
 
 # B. G. L. 25/08/2025 Crear blueprint para la tabla customer
 customer_bp = Blueprint("customer_bp", __name__)
 
+# B. G. L. 25/08/2025 Funcion para validar email
+def is_valid_email(email):
+    if not email:
+        return False
+    pattern = r'^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$'
+    return re.match(pattern, email) is not None
+
+# B. G. L. 25/08/2025 Funcion para validar telefono 
+def is_valid_phone(phone):
+    if not phone:
+        return False
+    # B. G. L. 25/08/2025 Permite numeros con formato internacional: +[código pais][numero]
+    pattern = r'^\+?[1-9]\d{1,14}$'
+    return re.match(pattern, phone) is not None
+
 # B. G. L. 25/08/2025 Crear un cliente nuevo
 @customer_bp.route("/", methods=["POST"])
 def create_customer():
-    data = request.get_json()
-    new_customer = Customer(
-        name=data.get("name"),
-        email=data.get("email"),
-        phone=data.get("phone"),
-        adress=data.get("adress")
-    )
-    db.session.add(new_customer)
-    db.session.commit()
-    return jsonify({"message": "Cliente creado", "id": new_customer.id}), 201
+    try:
+        data = request.get_json()
+        
+        # B. G. L. 25/08/2025 Validar que exista data
+        if not data:
+            return jsonify({"error": "No se proporcionaron datos"}), 400
+        
+        # B. G. L. 25/08/2025 Validar campos obligatorios
+        required_fields = ["name", "email"]
+        for field in required_fields:
+            if field not in data or not data[field]:
+                return jsonify({"error": f"El campo '{field}' es obligatorio"}), 400
+        
+        # B. G. L. 25/08/2025 Validar formato de email
+        if not is_valid_email(data["email"]):
+            return jsonify({"error": "El formato del email no es válido"}), 400
+        
+        # B. G. L. 25/08/2025 Validar formato de telefono si se proporciona
+        if "phone" in data and data["phone"] and not is_valid_phone(data["phone"]):
+            return jsonify({"error": "El formato del teléfono no es válido"}), 400
+        
+        # B. G. L. 25/08/2025 Verificar si el email ya existe
+        existing_customer = Customer.query.filter_by(email=data["email"]).first()
+        if existing_customer:
+            return jsonify({"error": "Ya existe un cliente con este email"}), 409
+        
+        new_customer = Customer(
+            name=data.get("name"),
+            email=data.get("email"),
+            phone=data.get("phone"),
+            adress=data.get("adress")
+        )
+        
+        db.session.add(new_customer)
+        db.session.commit()
+        
+        return jsonify({
+            "message": "Cliente creado exitosamente", 
+            "id": new_customer.id,
+            "customer": {
+                "id": new_customer.id,
+                "name": new_customer.name,
+                "email": new_customer.email,
+                "phone": new_customer.phone,
+                "adress": new_customer.adress
+            }
+        }), 201
+        
+    except IntegrityError as e:
+        db.session.rollback()
+        return jsonify({"error": "Error de integridad en la base de datos", "details": str(e)}), 400
+    except SQLAlchemyError as e:
+        db.session.rollback()
+        return jsonify({"error": "Error en la base de datos", "details": str(e)}), 500
+    except Exception as e:
+        db.session.rollback()
+        return jsonify({"error": "Error interno del servidor", "details": str(e)}), 500
 
 # B. G. L. 25/08/2025 Obtener todos los clientes
 @customer_bp.route("/", methods=["GET"])
 def get_customers():
-    customers = Customer.query.all()
-    result = [
-        {"id": c.id, "name": c.name, "email": c.email, "phone": c.phone, "adress": c.adress}
-        for c in customers
-    ]
-    return jsonify(result)
+    try:
+        # B. G. L. 25/08/2025 Paginacion
+        page = request.args.get('page', 1, type=int)
+        per_page = request.args.get('per_page', 10, type=int)
+        
+        # Validar parametros de paginacion
+        if page < 1 or per_page < 1 or per_page > 100:
+            return jsonify({"error": "Parámetros de paginación inválidos"}), 400
+        
+        customers = Customer.query.paginate(
+            page=page, 
+            per_page=per_page, 
+            error_out=False
+        )
+        
+        result = [
+            {"id": c.id, "name": c.name, "email": c.email, "phone": c.phone, "adress": c.adress}
+            for c in customers.items
+        ]
+        
+        return jsonify({
+            "customers": result,
+            "total": customers.total,
+            "pages": customers.pages,
+            "current_page": page
+        })
+        
+    except Exception as e:
+        return jsonify({"error": "Error al obtener los clientes", "details": str(e)}), 500
 
 # B. G. L. 25/08/2025 Obtener un cliente por id
 @customer_bp.route("/<int:id>", methods=["GET"])
 def get_customer(id):
-    customer = Customer.query.get_or_404(id)
-    return jsonify({"id": customer.id, "name": customer.name, "email": customer.email, "phone": customer.phone, "adress": customer.adress})
+    try:
+        if id <= 0:
+            return jsonify({"error": "ID inválido"}), 400
+            
+        customer = Customer.query.get(id)
+        
+        if not customer:
+            return jsonify({"error": "Cliente no encontrado"}), 404
+            
+        return jsonify({
+            "id": customer.id, 
+            "name": customer.name, 
+            "email": customer.email, 
+            "phone": customer.phone, 
+            "adress": customer.adress
+        })
+        
+    except Exception as e:
+        return jsonify({"error": "Error al obtener el cliente", "details": str(e)}), 500
 
 # B. G. L. 25/08/2025 Actualizar un cliente
 @customer_bp.route("/<int:id>", methods=["PUT"])
 def update_customer(id):
-    customer = Customer.query.get_or_404(id)
-    data = request.get_json()
-    customer.name = data.get("name", customer.name)
-    customer.email = data.get("email", customer.email)
-    customer.phone = data.get("phone", customer.phone)
-    customer.adress = data.get("adress", customer.adress)
-    db.session.commit()
-    return jsonify({"message": "Cliente actualizado"})
+    try:
+        if id <= 0:
+            return jsonify({"error": "ID inválido"}), 400
+            
+        customer = Customer.query.get(id)
+        
+        if not customer:
+            return jsonify({"error": "Cliente no encontrado"}), 404
+            
+        data = request.get_json()
+        
+        if not data:
+            return jsonify({"error": "No se proporcionaron datos para actualizar"}), 400
+        
+        # B. G. L. 25/08/2025 Validar formato de email si se proporciona
+        if "email" in data and data["email"]:
+            if not is_valid_email(data["email"]):
+                return jsonify({"error": "El formato del email no es válido"}), 400
+                
+            # B. G. L. 25/08/2025 Verificar si el email ya existe en otro cliente
+            existing_customer = Customer.query.filter(
+                Customer.email == data["email"], 
+                Customer.id != id
+            ).first()
+            
+            if existing_customer:
+                return jsonify({"error": "Ya existe otro cliente con este email"}), 409
+        
+        # B. G. L. 25/08/2025 Validar formato de telefono si se proporciona
+        if "phone" in data and data["phone"] and not is_valid_phone(data["phone"]):
+            return jsonify({"error": "El formato del teléfono no es válido"}), 400
+        
+        # B. G. L. 25/08/2025 Actualizar campos
+        if "name" in data:
+            customer.name = data["name"]
+        if "email" in data:
+            customer.email = data["email"]
+        if "phone" in data:
+            customer.phone = data["phone"]
+        if "adress" in data:
+            customer.adress = data["adress"]
+        
+        customer.updated_at = datetime.utcnow()
+        
+        db.session.commit()
+        
+        return jsonify({
+            "message": "Cliente actualizado exitosamente",
+            "customer": {
+                "id": customer.id,
+                "name": customer.name,
+                "email": customer.email,
+                "phone": customer.phone,
+                "adress": customer.adress
+            }
+        })
+        
+    except IntegrityError as e:
+        db.session.rollback()
+        return jsonify({"error": "Error de integridad en la base de datos", "details": str(e)}), 400
+    except SQLAlchemyError as e:
+        db.session.rollback()
+        return jsonify({"error": "Error en la base de datos", "details": str(e)}), 500
+    except Exception as e:
+        db.session.rollback()
+        return jsonify({"error": "Error interno del servidor", "details": str(e)}), 500
 
-# B. G. L. 25/08/2025 Actualizar un cliente
+# B. G. L. 25/08/2025 Eliminar un cliente
 @customer_bp.route("/<int:id>", methods=["DELETE"])
 def delete_customer(id):
-    customer = Customer.query.get_or_404(id)
-    db.session.delete(customer)
-    db.session.commit()
-    return jsonify({"message": "Cliente eliminado"})
+    try:
+        if id <= 0:
+            return jsonify({"error": "ID inválido"}), 400
+            
+        customer = Customer.query.get(id)
+        
+        if not customer:
+            return jsonify({"error": "Cliente no encontrado"}), 404
+            
+        db.session.delete(customer)
+        db.session.commit()
+        
+        return jsonify({"message": "Cliente eliminado exitosamente"})
+        
+    except SQLAlchemyError as e:
+        db.session.rollback()
+        return jsonify({"error": "Error en la base de datos", "details": str(e)}), 500
+    except Exception as e:
+        db.session.rollback()
+        return jsonify({"error": "Error interno del servidor", "details": str(e)}), 500

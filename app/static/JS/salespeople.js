@@ -1,9 +1,9 @@
-// static/js/salespeople.js
+// B. G. L. 27/08/2025 static/js/salespeople.js
 
 document.addEventListener("DOMContentLoaded", () => {
     const btnNew = document.getElementById("btn-new-salesperson");
 
-    // B. G. L. 27/08/2025 Crear un contenedor para el formulario
+    // B. G. L. 27/08/2025 Contenedor del formulario
     let formContainer = document.createElement("div");
     formContainer.id = "salesperson-form-container";
     formContainer.style.display = "none";
@@ -35,6 +35,8 @@ document.addEventListener("DOMContentLoaded", () => {
     const phoneField = document.getElementById("phone");
     const formTitle = document.getElementById("form-title");
 
+    const EMAIL_REGEX = /^[^@]+@[^@]+\.[^@]+$/;
+
     // B. G. L. 27/08/2025 Abrir formulario para nuevo vendedor
     btnNew.addEventListener("click", () => {
         idField.value = "";
@@ -54,17 +56,21 @@ document.addEventListener("DOMContentLoaded", () => {
     form.addEventListener("submit", async (e) => {
         e.preventDefault();
 
+        // Validaciones
+        if (!nameField.value.trim()) return alert("Nombre requerido");
+        if (!EMAIL_REGEX.test(emailField.value)) return alert("Email inválido");
+        if (phoneField.value.length < 7 || phoneField.value.length > 15) return alert("Teléfono inválido");
+
         const payload = {
-            name: nameField.value,
-            email: emailField.value,
-            phone: phoneField.value
+            name: nameField.value.trim(),
+            email: emailField.value.trim(),
+            phone: phoneField.value.trim()
         };
 
         let url = "/salespersons";
         let method = "POST";
 
         if (idField.value) {
-            // B. G. L. 27/08/2025 modo edicion
             url = `/salespersons/${idField.value}`;
             method = "PUT";
         }
@@ -80,7 +86,7 @@ document.addEventListener("DOMContentLoaded", () => {
                 alert(data.message || "Operación exitosa");
                 location.reload();
             } else {
-                alert("Error: " + data.error);
+                alert("Error: " + (data.error || "Desconocido"));
             }
         } catch (err) {
             console.error(err);
@@ -88,30 +94,46 @@ document.addEventListener("DOMContentLoaded", () => {
         }
     });
 
-    // B. G. L. 27/08/2025 Ver vendedor
-    document.querySelectorAll(".btn-view").forEach(btn => {
-        btn.addEventListener("click", async () => {
-            const id = btn.dataset.id;
-            const res = await fetch(`/salespersons/${id}`);
-            const sp = await res.json();
-            alert("Detalles del Vendedor:\n" + JSON.stringify(sp, null, 2));
+    // B. G. L. 27/08/2025 Funcion para agregar eventos de ver/editar
+    function attachRowEvents() {
+        document.querySelectorAll(".btn-view").forEach(btn => {
+            btn.addEventListener("click", async () => {
+                try {
+                    const id = btn.dataset.id;
+                    const res = await fetch(`/salespersons/${id}`);
+                    if (!res.ok) throw new Error("No se pudo obtener el vendedor");
+                    const sp = await res.json();
+                    alert("Detalles del Vendedor:\n" + JSON.stringify(sp, null, 2));
+                } catch (err) {
+                    console.error(err);
+                    alert(err.message);
+                }
+            });
         });
-    });
 
-    // B. G. L. 27/08/2025 Editar vendedor
-    document.querySelectorAll(".btn-edit").forEach(btn => {
-        btn.addEventListener("click", async () => {
-            const id = btn.dataset.id;
-            const res = await fetch(`/salespersons/${id}`);
-            const sp = await res.json();
+        document.querySelectorAll(".btn-edit").forEach(btn => {
+            btn.addEventListener("click", async () => {
+                try {
+                    const id = btn.dataset.id;
+                    const res = await fetch(`/salespersons/${id}`);
+                    if (!res.ok) throw new Error("No se pudo obtener el vendedor");
+                    const sp = await res.json();
 
-            idField.value = sp.id || sp.salesman_id;
-            nameField.value = sp.name;
-            emailField.value = sp.email;
-            phoneField.value = sp.phone;
+                    idField.value = sp.salesman_id;
+                    nameField.value = sp.name;
+                    emailField.value = sp.email;
+                    phoneField.value = sp.phone;
 
-            formTitle.textContent = "Editar Vendedor";
-            formContainer.style.display = "block";
+                    formTitle.textContent = "Editar Vendedor";
+                    formContainer.style.display = "block";
+                } catch (err) {
+                    console.error(err);
+                    alert(err.message);
+                }
+            });
         });
-    });
+    }
+
+    // B. G. L. 27/08/2025 Llamar al cargar
+    attachRowEvents();
 });

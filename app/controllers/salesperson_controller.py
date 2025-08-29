@@ -1,65 +1,120 @@
 from flask import Blueprint, request, jsonify
+from sqlalchemy.exc import SQLAlchemyError
 from app import db
 from app.models.salesperson import Salesperson
+import re
 
-# B. G. L. 25/08/2025 Crear blueprint para la tabla salesperson
+# B. G. L. 27/08/2025 Crear blueprint para la tabla Salespersons
 salesperson_bp = Blueprint("salesperson_bp", __name__)
 
-# B. G. L. 25/08/2025 Crear vendedor
+EMAIL_REGEX = r"[^@]+@[^@]+\.[^@]+"
+
+# B. G. L. 27/08/2025 Crear vendedor
 @salesperson_bp.route("/salespersons", methods=["POST"])
 def create_salesperson():
-    data = request.get_json()
-    new_salesperson = Salesperson(
-        name=data["name"],
-        email=data["email"],
-        phone=data["phone"]
-    )
-    db.session.add(new_salesperson)
-    db.session.commit()
-    return jsonify({"message": "Vendedor creado exitosamente"}), 201
+    try:
+        data = request.get_json()
+        required_fields = ["name", "email", "phone"]
+        for field in required_fields:
+            if field not in data or not data[field]:
+                return jsonify({"error": f"Falta el campo {field}"}), 400
 
-# B. G. L. 25/08/2025 Obtener todos los vendedores
+        if not re.match(EMAIL_REGEX, data["email"]):
+            return jsonify({"error": "Email inválido"}), 400
+
+        if len(data["phone"]) < 7 or len(data["phone"]) > 15:
+            return jsonify({"error": "Teléfono inválido"}), 400
+
+        new_salesperson = Salesperson(
+            name=data["name"],
+            email=data["email"],
+            phone=data["phone"]
+        )
+        db.session.add(new_salesperson)
+        db.session.commit()
+        return jsonify({"message": "Vendedor creado exitosamente", "salesman_id": new_salesperson.salesman_id}), 201
+
+    except SQLAlchemyError as e:
+        db.session.rollback()
+        return jsonify({"error": "Error en la base de datos", "details": str(e)}), 500
+    except Exception as e:
+        db.session.rollback()
+        return jsonify({"error": "Error interno", "details": str(e)}), 500
+
+# B. G. L. 27/08/2025 Obtener todos los vendedores
 @salesperson_bp.route("/salespersons", methods=["GET"])
 def get_salespersons():
-    salespersons = Salesperson.query.all()
-    return jsonify([
-        {
-            "salesman_id": s.salesman_id,
-            "name": s.name,
-            "email": s.email,
-            "phone": s.phone,
-            "registration_date": s.registration_date.isoformat() if s.registration_date else None
-        }
-        for s in salespersons
-    ])
+    try:
+        salespersons = Salesperson.query.all()
+        return jsonify([
+            {
+                "salesman_id": s.salesman_id,
+                "name": s.name,
+                "email": s.email,
+                "phone": s.phone,
+                "registration_date": s.registration_date.isoformat() if s.registration_date else None
+            }
+            for s in salespersons
+        ]), 200
+    except SQLAlchemyError as e:
+        return jsonify({"error": "Error en la base de datos", "details": str(e)}), 500
 
-# B. G. L. 25/08/2025 Obtener un vendedor por ID
-@salesperson_bp.route("/salespersons/<int:id>", methods=["GET"])
+# B. G. L. 27/08/2025 Obtener vendedor por ID
+@salesperson_bp.route("/salespersons/<int:salesman_id>", methods=["GET"])
 def get_salesperson(salesman_id):
-    salesperson = Salesperson.query.get_or_404(salesman_id)
-    return jsonify({
-        "salesman_id": salesperson.salesman_id,
-        "name": salesperson.name,
-        "email": salesperson.email,
-        "phone": salesperson.phone,
-        "registration_date": salesperson.registration_date.isoformat() if salesperson.registration_date else None
-    })
+    try:
+        salesperson = Salesperson.query.get_or_404(salesman_id)
+        return jsonify({
+            "salesman_id": salesperson.salesman_id,
+            "name": salesperson.name,
+            "email": salesperson.email,
+            "phone": salesperson.phone,
+            "registration_date": salesperson.registration_date.isoformat() if salesperson.registration_date else None
+        }), 200
+    except SQLAlchemyError as e:
+        return jsonify({"error": "Error en la base de datos", "details": str(e)}), 500
 
-# B. G. L. 25/08/2025 Actualizar vendedor
-@salesperson_bp.route("/salespersons/<int:id>", methods=["PUT"])
+# B. G. L. 27/08/2025 Actualizar vendedor
+@salesperson_bp.route("/salespersons/<int:salesman_id>", methods=["PUT"])
 def update_salesperson(salesman_id):
-    salesperson = Salesperson.query.get_or_404(salesman_id)
-    data = request.get_json()
-    salesperson.name = data.get("name", salesperson.name)
-    salesperson.email = data.get("email", salesperson.email)
-    salesperson.phone = data.get("phone", salesperson.phone)
-    db.session.commit()
-    return jsonify({"message": "Vendedor actualizado correctamente"})
+    try:
+        salesperson = Salesperson.query.get_or_404(salesman_id)
+        data = request.get_json()
 
-# B. G. L. 25/08/2025 Eliminar vendedor
-@salesperson_bp.route("/salespersons/<int:id>", methods=["DELETE"])
+        if "name" in data and data["name"]:
+            salesperson.name = data["name"]
+
+        if "email" in data and data["email"]:
+            if not re.match(EMAIL_REGEX, data["email"]):
+                return jsonify({"error": "Email inválido"}), 400
+            salesperson.email = data["email"]
+
+        if "phone" in data and data["phone"]:
+            if len(data["phone"]) < 7 or len(data["phone"]) > 15:
+                return jsonify({"error": "Teléfono inválido"}), 400
+            salesperson.phone = data["phone"]
+
+        db.session.commit()
+        return jsonify({"message": "Vendedor actualizado correctamente"}), 200
+
+    except SQLAlchemyError as e:
+        db.session.rollback()
+        return jsonify({"error": "Error en la base de datos", "details": str(e)}), 500
+    except Exception as e:
+        db.session.rollback()
+        return jsonify({"error": "Error interno", "details": str(e)}), 500
+
+# B. G. L. 27/08/2025 Eliminar vendedor
+@salesperson_bp.route("/salespersons/<int:salesman_id>", methods=["DELETE"])
 def delete_salesperson(salesman_id):
-    salesperson = Salesperson.query.get_or_404(salesman_id)
-    db.session.delete(salesperson)
-    db.session.commit()
-    return jsonify({"message": "Vendedor eliminado"})
+    try:
+        salesperson = Salesperson.query.get_or_404(salesman_id)
+        db.session.delete(salesperson)
+        db.session.commit()
+        return jsonify({"message": "Vendedor eliminado"}), 200
+    except SQLAlchemyError as e:
+        db.session.rollback()
+        return jsonify({"error": "Error en la base de datos", "details": str(e)}), 500
+    except Exception as e:
+        db.session.rollback()
+        return jsonify({"error": "Error interno", "details": str(e)}), 500

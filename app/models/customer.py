@@ -8,7 +8,7 @@ class Customer(db.Model):
     name = db.Column(db.String(100), nullable=False)
     email = db.Column(db.String(100), unique=True, nullable=False)
     phone = db.Column(db.String(20))
-    address = db.Column(db.String(255))
+    address = db.Column("adress", db.String(255))
     
     # B. G. L. 22/08/2025 Relacion con Orders
     orders = db.relationship('Order', backref='customer', lazy=True)
