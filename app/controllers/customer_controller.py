@@ -56,7 +56,7 @@ def create_customer():
             name=data.get("name"),
             email=data.get("email"),
             phone=data.get("phone"),
-            adress=data.get("adress")
+            address=data.get("address")
         )
         
         db.session.add(new_customer)
@@ -64,13 +64,13 @@ def create_customer():
         
         return jsonify({
             "message": "Cliente creado exitosamente", 
-            "id": new_customer.id,
+            "id": new_customer.customer_id,
             "customer": {
-                "id": new_customer.id,
+                "id": new_customer.customer_id,
                 "name": new_customer.name,
                 "email": new_customer.email,
                 "phone": new_customer.phone,
-                "adress": new_customer.adress
+                "address": new_customer.address
             }
         }), 201
         
@@ -96,22 +96,24 @@ def get_customers():
         if page < 1 or per_page < 1 or per_page > 100:
             return jsonify({"error": "Parámetros de paginación inválidos"}), 400
         
-        customers = Customer.query.paginate(
-            page=page, 
-            per_page=per_page, 
-            error_out=False
-        )
+        customers = Customer.query.all()
         
         result = [
-            {"id": c.id, "name": c.name, "email": c.email, "phone": c.phone, "adress": c.adress}
-            for c in customers.items
+            {
+                "id": c.customer_id,
+                "name": c.name,
+                "email": c.email,
+                "phone": c.phone,
+                "address": c.address  # coincidir con tu JS
+            }
+            for c in customers
         ]
         
         return jsonify({
             "customers": result,
-            "total": customers.total,
-            "pages": customers.pages,
-            "current_page": page
+            "total": len(result),
+            "pages": 1,
+            "current_page": 1
         })
         
     except Exception as e:
@@ -130,11 +132,11 @@ def get_customer(id):
             return jsonify({"error": "Cliente no encontrado"}), 404
             
         return jsonify({
-            "id": customer.id, 
-            "name": customer.name, 
-            "email": customer.email, 
-            "phone": customer.phone, 
-            "adress": customer.adress
+            "id": customer.customer_id, 
+            "name": customer.name,
+            "email": customer.email,
+            "phone": customer.phone,
+            "address": customer.address
         })
         
     except Exception as e:
@@ -165,7 +167,7 @@ def update_customer(id):
             # B. G. L. 25/08/2025 Verificar si el email ya existe en otro cliente
             existing_customer = Customer.query.filter(
                 Customer.email == data["email"], 
-                Customer.id != id
+                Customer.customer_id != id
             ).first()
             
             if existing_customer:
@@ -182,8 +184,8 @@ def update_customer(id):
             customer.email = data["email"]
         if "phone" in data:
             customer.phone = data["phone"]
-        if "adress" in data:
-            customer.adress = data["adress"]
+        if "address" in data:
+            customer.address = data["address"]
         
         customer.updated_at = datetime.utcnow()
         
@@ -192,11 +194,11 @@ def update_customer(id):
         return jsonify({
             "message": "Cliente actualizado exitosamente",
             "customer": {
-                "id": customer.id,
+                "id": customer.customer_id,
                 "name": customer.name,
                 "email": customer.email,
                 "phone": customer.phone,
-                "adress": customer.adress
+                "address": customer.address
             }
         })
         

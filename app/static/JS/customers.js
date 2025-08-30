@@ -7,7 +7,7 @@ document.addEventListener("DOMContentLoaded", () => {
     const nameField = document.getElementById("customer-name");
     const emailField = document.getElementById("customer-email");
     const phoneField = document.getElementById("customer-phone");
-    const adressField = document.getElementById("customer-adress");
+    const addressField = document.getElementById("customer-address");
     const errorContainer = document.getElementById("error-container");
     const successContainer = document.getElementById("success-container");
 
@@ -52,7 +52,7 @@ document.addEventListener("DOMContentLoaded", () => {
     // B. G. L. 27/08/2025 Cargar clientes desde API
     async function loadCustomers() {
         try {
-            const res = await fetch("/customers/");
+            const res = await fetch("/api/customers/");
             
             if (!res.ok) {
                 throw new Error(`Error ${res.status}: ${res.statusText}`);
@@ -77,7 +77,7 @@ document.addEventListener("DOMContentLoaded", () => {
                     <td>${c.name}</td>
                     <td>${c.email}</td>
                     <td>${c.phone || ""}</td>
-                    <td>${c.adress || ""}</td>
+                    <td>${c.address || ""}</td>
                     <td>
                     <button class="btn-edit" data-id="${c.id}">Editar</button>
                     <button class="btn-delete" data-id="${c.id}">Eliminar</button>
@@ -103,7 +103,7 @@ document.addEventListener("DOMContentLoaded", () => {
     // B. G. L. 27/08/2025 Editar cliente
     async function editCustomer(id) {
         try {
-            const res = await fetch(`/customers/${id}`);
+            const res = await fetch(`/api/customers/${id}`);
             
             if (!res.ok) {
                 if (res.status === 404) {
@@ -117,7 +117,7 @@ document.addEventListener("DOMContentLoaded", () => {
             nameField.value = c.name;
             emailField.value = c.email;
             phoneField.value = c.phone || "";
-            adressField.value = c.adress || "";
+            addressField.value = c.address || "";
             formTitle.textContent = "Editar Cliente";
             formContainer.style.display = "block";
             errorContainer.style.display = "none";
@@ -133,7 +133,7 @@ document.addEventListener("DOMContentLoaded", () => {
         if (!confirm("¿Seguro que quieres eliminar este cliente?")) return;
         
         try {
-            const res = await fetch(`/customers/${id}`, { method: "DELETE" });
+            const res = await fetch(`/api/customers/${id}`, { method: "DELETE" });
             
             if (!res.ok) {
                 const errorData = await res.json();
@@ -179,14 +179,14 @@ document.addEventListener("DOMContentLoaded", () => {
             name: nameField.value.trim(),
             email: emailField.value.trim(),
             phone: phoneField.value.trim() || null,
-            adress: adressField.value.trim() || null
+            address: addressField.value.trim() || null
         };
 
-        let url = "/customers/";
+        let url = "/api/customers/";
         let method = "POST";
 
         if (id) {
-            url = `/customers/${id}`;
+            url = `/api/customers/${id}`;
             method = "PUT";
         }
 
