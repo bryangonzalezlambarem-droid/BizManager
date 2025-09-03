@@ -8,7 +8,8 @@ CREATE TABLE Salespeople(
 	name NVARCHAR(100) NOT NULL,
 	email NVARCHAR(100) UNIQUE NOT NULL,
 	phone NVARCHAR(100),
-	registration_date DATETIME DEFAULT GETDATE()
+	registration_date DATETIME DEFAULT GETDATE(),
+	password_hash NVARCHAR(255) NOT NULL DEFAULT '';
 );
 
 -- B. G. L. 22/08/2025  Crear tabla de clientes
@@ -17,7 +18,7 @@ CREATE TABLE Customers (
 	name NVARCHAR(100) NOT NULL,
 	email NVARCHAR(100) UNIQUE NOT NULL,
 	phone NVARCHAR(20),
-	adress NVARCHAR(255)
+	address NVARCHAR(255)
 );
 
 -- B. G. L. 22/08/2025  Crear tabla de productos

@@ -1,4 +1,4 @@
-from flask import Flask, render_template
+from flask import Flask, render_template, redirect, url_for, session, request
 from flask_sqlalchemy import SQLAlchemy
 
 db = SQLAlchemy()
@@ -17,7 +17,9 @@ def create_app():
     from app.controllers.product_controller import product_bp
     from app.controllers.salesperson_controller import salesperson_bp
     from app.controllers.order_controller import order_bp
+    from app.controllers.auth_controller import auth_bp
 
+    app.register_blueprint(auth_bp, url_prefix="/auth")
     app.register_blueprint(customer_bp, url_prefix="/api/customers")
     app.register_blueprint(product_bp, url_prefix="/api/products")
     app.register_blueprint(salesperson_bp, url_prefix="/api/salespersons")

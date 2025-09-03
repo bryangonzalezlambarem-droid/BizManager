@@ -18,6 +18,13 @@
                 <li><a href="{{ url_for('salespeople_page') }}">Vendedores</a></li>
                 <li><a href="{{ url_for('index') }}">Pedidos</a></li>
             </ul>
+
+            {% if session.get('salesman_name') %}
+            <div id="user-info">
+                <span>Hola, {{ session.salesman_name }}</span>
+                <button id="logout-btn">Cerrar sesión</button>
+            </div>
+            {% endif %}
         </nav>
     </header>
 
