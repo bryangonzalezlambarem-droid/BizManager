@@ -20,22 +20,25 @@
         </tr>
     </thead>
     <tbody>
-        {% for product in products %}
-        <tr>
-            <td>{{ product.product_id }}</td>
-            <td>{{ product.name }}</td>
-            <td>{{ product.description }}</td>
-            <td>{{ product.price }}</td>
-            <td>{{ product.stock }}</td>
-            <td>{{ product.salesperson_name }}</td>
-            <td>
-                <button class="btn-view" data-id="{{ product.product_id }}">Ver</button>
-                <button class="btn-edit" data-id="{{ product.product_id }}">Editar</button>
-            </td>
-        </tr>
-        {% endfor %}
+        
     </tbody>
 </table>
+
+<div id="product-form-container" style="display:none; margin-top:20px;">
+    <h3 id="product-form-title">Nuevo Producto</h3>
+    <form id="product-form">
+        <input type="hidden" id="product-id">
+        <label>Nombre: <input type="text" id="product-name" required></label><br>
+        <label>Descripción: <input type="text" id="product-description"></label><br>
+        <label>Precio: <input type="number" id="product-price" step="0.01" required></label><br>
+        <label>Stock: <input type="number" id="product-stock" required></label><br>
+        <button type="submit">Guardar</button>
+        <button type="button" id="product-cancel-btn">Cancelar</button>
+    </form>
+    <div id="product-error-container" style="color:red; display:none;"></div>
+    <div id="product-success-container" style="color:green; display:none;"></div>
+</div>
+
 {% endblock %}
 
 {% block scripts %}

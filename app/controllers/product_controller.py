@@ -7,13 +7,12 @@ from app.models.product import Product
 product_bp = Blueprint("product_bp", __name__)
 
 # B. G. L. 25/08/2025 Crear producto
-@product_bp.route("/products", methods=["POST"])
+@product_bp.route("/", methods=["POST"])
 def create_product():
     try:
         data = request.get_json()
 
-        # B. G. L. 25/08/2025 Validaciones basicas
-        required_fields = ["name", "description", "price", "stock"]
+        required_fields = ["name", "description", "price", "stock", "salesman_id"]
         for field in required_fields:
             if field not in data:
                 return jsonify({"error": f"Falta el campo {field}"}), 400
@@ -28,11 +27,12 @@ def create_product():
             name=data["name"],
             description=data["description"],
             price=data["price"],
-            stock=data["stock"]
+            stock=data["stock"],
+            salesman_id=data["salesman_id"]
         )
         db.session.add(new_product)
         db.session.commit()
-        return jsonify({"message": "Producto creado exitosamente", "id": new_product.id}), 201
+        return jsonify({"message": "Producto creado exitosamente", "product_id": new_product.product_id}), 201
 
     except SQLAlchemyError as e:
         db.session.rollback()
@@ -42,42 +42,44 @@ def create_product():
         return jsonify({"error": "Error interno", "details": str(e)}), 500
 
 # B. G. L. 25/08/2025 Obtener todos los productos
-@product_bp.route("/products", methods=["GET"])
+@product_bp.route("/", methods=["GET"])
 def get_products():
     try:
         products = Product.query.all()
         return jsonify([
             {
-                "id": p.id,
+                "product_id": p.product_id,
                 "name": p.name,
                 "description": p.description,
-                "price": p.price,
-                "stock": p.stock
+                "price": float(p.price),
+                "stock": p.stock,
+                "salesman_id": p.salesman_id
             } for p in products
         ]), 200
     except SQLAlchemyError as e:
         return jsonify({"error": "Error en la base de datos", "details": str(e)}), 500
 
 # B. G. L. 25/08/2025 Obtener producto por ID
-@product_bp.route("/products/<int:id>", methods=["GET"])
-def get_product(id):
+@product_bp.route("/<int:product_id>", methods=["GET"])
+def get_product(product_id):
     try:
-        product = Product.query.get_or_404(id)
+        product = Product.query.get_or_404(product_id)
         return jsonify({
-            "id": product.id,
+            "product_id": product.product_id,
             "name": product.name,
             "description": product.description,
-            "price": product.price,
-            "stock": product.stock
+            "price": float(product.price),
+            "stock": product.stock,
+            "salesman_id": product.salesman_id
         }), 200
     except SQLAlchemyError as e:
         return jsonify({"error": "Error en la base de datos", "details": str(e)}), 500
 
 # B. G. L. 25/08/2025 Actualizar producto
-@product_bp.route("/products/<int:id>", methods=["PUT"])
-def update_product(id):
+@product_bp.route("/<int:product_id>", methods=["PUT"])
+def update_product(product_id):
     try:
-        product = Product.query.get_or_404(id)
+        product = Product.query.get_or_404(product_id)
         data = request.get_json()
 
         if "name" in data:
@@ -87,14 +89,25 @@ def update_product(id):
             product.description = data["description"]
 
         if "price" in data:
-            if not isinstance(data["price"], (int, float)) or data["price"] < 0:
-                return jsonify({"error": "El precio debe ser un número positivo"}), 400
-            product.price = data["price"]
+            try:
+                price = float(data["price"])
+                if price < 0:
+                    return jsonify({"error": "El precio debe ser un número positivo"}), 400
+                product.price = price
+            except (ValueError, TypeError):
+                return jsonify({"error": "El precio debe ser numérico"}), 400
 
         if "stock" in data:
-            if not isinstance(data["stock"], int) or data["stock"] < 0:
-                return jsonify({"error": "El stock debe ser un número entero positivo"}), 400
-            product.stock = data["stock"]
+            try:
+                stock = int(data["stock"])
+                if stock < 0:
+                    return jsonify({"error": "El stock debe ser un número entero positivo"}), 400
+                product.stock = stock
+            except (ValueError, TypeError):
+                return jsonify({"error": "El stock debe ser un número entero"}), 400
+
+        if "salesman_id" in data:
+            product.salesman_id = data["salesman_id"]
 
         db.session.commit()
         return jsonify({"message": "Producto actualizado correctamente"}), 200
@@ -107,10 +120,10 @@ def update_product(id):
         return jsonify({"error": "Error interno", "details": str(e)}), 500
 
 # B. G. L. 25/08/2025 Eliminar producto
-@product_bp.route("/products/<int:id>", methods=["DELETE"])
-def delete_product(id):
+@product_bp.route("/<int:product_id>", methods=["DELETE"])
+def delete_product(product_id):
     try:
-        product = Product.query.get_or_404(id)
+        product = Product.query.get_or_404(product_id)
         db.session.delete(product)
         db.session.commit()
         return jsonify({"message": "Producto eliminado"}), 200

@@ -1,30 +1,43 @@
 // B. G. L. 27/08/2025 CRUD Productos
 
 document.addEventListener("DOMContentLoaded", () => {
+    const formContainer = document.getElementById("product-form-container");
+    const form = document.getElementById("product-form");
+    const formTitle = document.getElementById("product-form-title");
+    const productIdField = document.getElementById("product-id");
+    const nameField = document.getElementById("product-name");
+    const descriptionField = document.getElementById("product-description");
+    const priceField = document.getElementById("product-price");
+    const stockField = document.getElementById("product-stock");
+    const errorContainer = document.getElementById("product-error-container");
+    const successContainer = document.getElementById("product-success-container");
+
     const tableBody = document.querySelector("#products-table tbody");
     const btnNewProduct = document.getElementById("btn-new-product");
+    const btnCancelProduct = document.getElementById("product-cancel-btn");
 
     // B. G. L. 25/08/2025 Cargar productos al inicio
+    // Cargar productos
     async function loadProducts() {
         try {
             tableBody.innerHTML = "";
-            const res = await fetch("/products");
+            const res = await fetch("/api/products"); // 🔧 quité la "/" final para que coincida con backend
             if (!res.ok) throw new Error("Error al cargar productos");
             const products = await res.json();
             
             products.forEach(p => {
                 const row = document.createElement("tr");
                 row.innerHTML = `
-                    <td>${p.id}</td>
+                    <td>${p.product_id}</td> 
                     <td>${p.name}</td>
                     <td>${p.description}</td>
                     <td>${p.price}</td>
                     <td>${p.stock}</td>
-                    <td>-</td>
+                    <td>${p.salesman_id}</td>
                     <td>
-                        <button class="btn-view" data-id="${p.id}">Ver</button>
-                        <button class="btn-edit" data-id="${p.id}">Editar</button>
-                        <button class="btn-delete" data-id="${p.id}">Eliminar</button>
+                        <button class="btn-view" data-id="${p.product_id}">Ver</button>
+                        <button class="btn-edit" data-id="${p.product_id}">Editar</button>
+                        <button class="btn-delete" data-id="${p.product_id}">Eliminar</button>
                     </td>
                 `;
                 tableBody.appendChild(row);
@@ -35,10 +48,11 @@ document.addEventListener("DOMContentLoaded", () => {
         }
     }
 
+
     // B. G. L. 25/08/2025 Crear producto
     async function createProduct(product) {
         try {
-            const res = await fetch("/products", {
+            const res = await fetch("/api/products/", {
                 method: "POST",
                 headers: { "Content-Type": "application/json"},
                 body: JSON.stringify(product)
@@ -56,7 +70,7 @@ document.addEventListener("DOMContentLoaded", () => {
     // B. G. L. 25/08/2025 Editar producto
     async function editProduct(id, product) {
         try {
-            const res = await fetch(`/products/${id}`, {
+            const res = await fetch(`/api/products/${id}`, {
                 method: "PUT",
                 headers: { "Content-Type": "application/json"},
                 body: JSON.stringify(product)
@@ -74,7 +88,7 @@ document.addEventListener("DOMContentLoaded", () => {
     // B. G. L. 25/08/2025 Eliminar producto
     async function deleteProduct(id) {
         try {
-            const res = await fetch(`/products/${id}`, { method: "DELETE" });
+            const res = await fetch(`/api/products/${id}`, { method: "DELETE" });
             const data = await res.json();
             if (!res.ok) throw new Error(data.error || "Error al eliminar producto");
             alert("Producto eliminado exitosamente");
@@ -95,51 +109,86 @@ document.addEventListener("DOMContentLoaded", () => {
             }
         }
 
-        if(e.target.classList.contains("btn-edit")) {
-            const name = prompt("Nuevo nombre del producto:");
-            const description = prompt("Nueva descripción:");
-            const price = prompt("Nuevo precio:");
-            const stock = prompt("Nuevo stock:");
-
-            // B. G. L. 25/08/2025 Validar inputs
-            const priceNum = parseFloat(price);
-            const stockNum = parseInt(stock);
-
-            if (!name || isNaN(priceNum) || priceNum < 0 || isNaN(stockNum) || stockNum < 0) {
-                alert("Datos inválidos. Revisa nombre, precio y stock.");
-                return;
-            }
-
-            editProduct(id, { name, description, price: priceNum, stock: stockNum });
+        if (e.target.classList.contains("btn-edit")) {
+            editProductForm(id);
         }
 
         if (e.target.classList.contains("btn-view")) {
-            fetch(`/products/${id}`)
-                .then(res => res.json())
-                .then(p => alert(`Producto:\nNombre: ${p.name}\nDescripción: ${p.description}\nPrecio: ${p.price}\nStock: ${p.stock}`))
+            fetch(`/api/products/${id}`)
+                .then(res => {
+                    if (!res.ok) {
+                        throw new Error(`Error ${res.status}: Producto no encontrado`);
+                    }
+                    return res.json();
+                })
+                .then(p => {
+                    alert(`Producto:\nNombre: ${p.name}\nDescripción: ${p.description}\nPrecio: ${p.price}\nStock: ${p.stock}`);
+                })
                 .catch(err => {
                     console.error(err);
-                    alert("Error al obtener producto");
+                    alert(err.message);
                 });
         }
     });
 
     // B. G. L. 25/08/2025 Boton nuevo producto
     btnNewProduct.addEventListener("click", () => {
-        const name = prompt("Nombre del producto:");
-        const description = prompt("Descripción:");
-        const price = prompt("Precio:");
-        const stock = prompt("Stock:");
+        form.reset();
+        productIdField.value = "";
+        formTitle.textContent = "Nuevo Producto";
+        formContainer.style.display = "block";
+        errorContainer.style.display = "none";
+        successContainer.style.display = "none";
+    });
 
-        const priceNum = parseFloat(price);
-        const stockNum = parseInt(stock);
+    function showMessage(container, message) {
+        container.textContent = message;
+        container.style.display = "block";
+        setTimeout(() => container.style.display = "none", 5000);
+    }
 
-        if (!name || isNaN(priceNum) || priceNum < 0 || isNaN(stockNum) || stockNum < 0) {
-            alert("Datos inválidos. Revisa nombre, precio y stock.");
-            return;
+    function editProductForm(id) {
+        fetch(`/api/products/${id}`)
+            .then(res => res.json())
+            .then(p => {
+                productIdField.value = p.product_id;
+                nameField.value = p.name;
+                descriptionField.value = p.description;
+                priceField.value = p.price;
+                stockField.value = p.stock;
+                formTitle.textContent = "Editar Producto";
+                formContainer.style.display = "block";
+                errorContainer.style.display = "none";
+            })
+            .catch(err => showMessage(errorContainer, "Error al cargar producto: " + err.message));
+    }
+
+    form.addEventListener("submit", async (e) => {
+        e.preventDefault();
+        const id = productIdField.value;
+        const data = {
+            name: nameField.value.trim(),
+            description: descriptionField.value.trim(),
+            price: parseFloat(priceField.value),
+            stock: parseInt(stockField.value)
+        };
+        const url = id ? `/api/products/${id}` : "/api/products/";
+        const method = id ? "PUT" : "POST";
+
+        try {
+            const res = await fetch(url, {
+                method,
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify(data)
+            });
+            const resp = await res.json();
+            if (!res.ok) throw new Error(resp.error || "Error interno");
+            showMessage(successContainer, resp.message || "Operación realizada correctamente");
+            formContainer.style.display = "none";
+            loadProducts();
+        } catch (err) {
+            showMessage(errorContainer, err.message);
         }
-
-        createProduct({ name, description, price: priceNum, stock: stockNum });
     });
 
     // B. G. L. 25/08/2025 Cargar todo al inicio
