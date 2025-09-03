@@ -112,17 +112,19 @@ def update_salesperson(salesman_id):
         db.session.rollback()
         return jsonify({"error": "Error interno", "details": str(e)}), 500
 
-# B. G. L 03/09/2025 Eliminar vendedor
+# B. G. L 03/09/2025 Eliminar vendedor (con cascada)
 @salesperson_bp.route("/<int:salesman_id>", methods=["DELETE"])
 def delete_salesperson(salesman_id):
     try:
         salesperson = Salesperson.query.get_or_404(salesman_id)
         db.session.delete(salesperson)
         db.session.commit()
-        return jsonify({"message": "Vendedor eliminado"}), 200
+        return jsonify({"message": "Vendedor eliminado correctamente"}), 200
     except SQLAlchemyError as e:
         db.session.rollback()
         return jsonify({"error": "Error en la base de datos", "details": str(e)}), 500
     except Exception as e:
         db.session.rollback()
         return jsonify({"error": "Error interno", "details": str(e)}), 500
+
+

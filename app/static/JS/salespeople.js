@@ -67,11 +67,11 @@ document.addEventListener("DOMContentLoaded", () => {
             phone: phoneField.value.trim()
         };
 
-        let url = "/salespersons";
+        let url = "api/salespersons";
         let method = "POST";
 
         if (idField.value) {
-            url = `/salespersons/${idField.value}`;
+            url = `api/salespersons/${idField.value}`;
             method = "PUT";
         }
 
@@ -96,11 +96,12 @@ document.addEventListener("DOMContentLoaded", () => {
 
     // B. G. L. 27/08/2025 Funcion para agregar eventos de ver/editar
     function attachRowEvents() {
+        // Ver
         document.querySelectorAll(".btn-view").forEach(btn => {
             btn.addEventListener("click", async () => {
                 try {
                     const id = btn.dataset.id;
-                    const res = await fetch(`/salespersons/${id}`);
+                    const res = await fetch(`api/salespersons/${id}`);
                     if (!res.ok) throw new Error("No se pudo obtener el vendedor");
                     const sp = await res.json();
                     alert("Detalles del Vendedor:\n" + JSON.stringify(sp, null, 2));
@@ -111,11 +112,12 @@ document.addEventListener("DOMContentLoaded", () => {
             });
         });
 
+        //  B. G. L. 22/08/2025  Editar
         document.querySelectorAll(".btn-edit").forEach(btn => {
             btn.addEventListener("click", async () => {
                 try {
                     const id = btn.dataset.id;
-                    const res = await fetch(`/salespersons/${id}`);
+                    const res = await fetch(`api/salespersons/${id}`);
                     if (!res.ok) throw new Error("No se pudo obtener el vendedor");
                     const sp = await res.json();
 
@@ -129,6 +131,31 @@ document.addEventListener("DOMContentLoaded", () => {
                 } catch (err) {
                     console.error(err);
                     alert(err.message);
+                }
+            });
+        });
+
+        //  B. G. L. 03/09/2025 Eliminar
+        document.querySelectorAll(".btn-delete").forEach(btn => {
+            btn.addEventListener("click", async () => {
+                const id = btn.dataset.id;
+                if (!confirm("¿Seguro que deseas eliminar este vendedor?")) return;
+
+                try {
+                    const res = await fetch(`api/salespersons/${id}`, {
+                        method: "DELETE",
+                        headers: { "Content-Type": "application/json" }
+                    });
+                    const data = await res.json();
+                    if (res.ok) {
+                        alert(data.message || "Vendedor eliminado");
+                        location.reload();
+                    } else {
+                        alert("Error: " + (data.error || "Desconocido"));
+                    }
+                } catch (err) {
+                    console.error(err);
+                    alert("Error al eliminar");
                 }
             });
         });

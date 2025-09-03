@@ -12,10 +12,21 @@ class Salesperson(db.Model):
     registration_date = db.Column(db.DateTime, server_default=db.func.now())
     password_hash = db.Column(db.String(255), nullable=False)
     
-    # B. G. L. 22/08/2025 Relacion con Productos
-    products = db.relationship('Product', backref='salesperson', lazy=True)
-    # B. G. L. 22/08/2025 Relacion con OrderDetails
-    order_details = db.relationship('OrderDetail', backref='salesperson', lazy=True)
+    #  B. G. L. 22/08/2025 Relacion con Productos (borrado en cascada)
+    products = db.relationship(
+        'Product',
+        backref='salesperson',
+        lazy=True,
+        cascade="all, delete-orphan"
+    )
+    
+    #  B. G. L. 22/08/2025 Relacion con OrderDetails (borrado en cascada)
+    order_details = db.relationship(
+        'OrderDetail',
+        backref='salesperson',
+        lazy=True,
+        cascade="all, delete-orphan"
+    )
     
     def set_password(self, password):
         self.password_hash = generate_password_hash(password)
@@ -25,5 +36,3 @@ class Salesperson(db.Model):
     
     def __repr__(self):
         return f"<Salesperson {self.name}>"
-    
-    
