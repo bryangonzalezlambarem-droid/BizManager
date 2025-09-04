@@ -1,0 +1,153 @@
+/*  B. G. L. 03/09/2025Reset y tipografia */
+* {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+    font-family: 'Poppins', sans-serif;
+}
+body {
+    height: 100vh;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    background: linear-gradient(135deg, #0f172a, #1e293b);
+    color: #fff;
+    overflow: hidden;
+}
+/* B. G. L. 03/09/2025 Contenedor principal */
+main {
+    background: #111827;
+    padding: 3rem 2rem;
+    border-radius: 16px;
+    box-shadow: 0 0 20px rgba(0, 255, 255, 0.2), 0 0 40px rgba(99, 102, 241, 0.2);
+    width: 100%;
+    max-width: 380px;
+    animation: fadeInUp 0.8s ease forwards;
+}
+/* B. G. L. 03/09/2025 Animacion fadeInUp */
+@keyframes fadeInUp {
+    from { opacity: 0; transform: translateY(20px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+/* B. G. L. 03/09/2025 Titulo */
+h1 {
+    text-align: center;
+    font-size: 2rem;
+    margin-bottom: 2rem;
+    letter-spacing: 1px;
+    color: #bbd6e1;
+    text-shadow: 0 0 12px #38bdf8, 0 0 24px #6366f1;
+}
+/* B. G. L. 03/09/2025 Cada campo (label + input) con espacio */
+.field {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem; /* B. G. L. 03/09/2025 espacio entre label e input */
+}
+/* B. G. L. 03/09/2025 Formulario principal */
+form {
+    display: flex;
+    flex-direction: column;
+    gap: 1.8rem; /* B. G. L. 03/09/2025 espacio entre campos */
+}
+label {
+    font-weight: 500;
+    font-size: 0.95rem;
+    color: #cbd5e1;
+}
+/* B. G. L. 03/09/2025 Inputs futuristas */
+input {
+    width: 100%;
+    padding: 0.75rem 1rem;
+    border-radius: 12px;
+    border: 1px solid #334155;
+    background: #1e293b;
+    color: #fff;
+    font-size: 1rem;
+    transition: 0.3s ease;
+}
+/* B. G. L. 03/09/2025 Focus animado */
+input:focus {
+    border-color: #38bdf8;
+    box-shadow: 0 0 8px #38bdf8, 0 0 16px #6366f1;
+    background: #1f2937;
+    outline: none;
+}
+/* B. G. L. 03/09/2025 Boton login con luz pulsante */
+button[type="submit"] {
+    padding: 0.8rem;
+    border-radius: 12px;
+    border: none;
+    cursor: pointer;
+    font-weight: 600;
+    font-size: 1rem;
+    background: linear-gradient(90deg, #38bdf8, #6366f1);
+    color: #fff;
+    text-transform: uppercase;
+    transition: all 0.3s ease;
+    position: relative;
+    overflow: hidden;
+} 
+/* B. G. L. 03/09/2025 Pulsing glow */
+button[type="submit"]::after {
+    content: '';
+    position: absolute;
+    top: -50%;
+    left: -50%;
+    width: 200%;
+    height: 200%;
+    background: rgba(56, 189, 248, 0.3);
+    transform: rotate(45deg);
+    opacity: 0;
+    transition: all 0.5s ease;
+}
+button[type="submit"]:hover::after {
+    opacity: 1;
+    top: 0;
+    left: 0;
+}
+
+/* B. G. L. 03/09/2025 Hover boton */
+button[type="submit"]:hover {
+    transform: translateY(-2px) scale(1.03);
+    box-shadow: 0 0 12px #38bdf8, 0 0 24px #6366f1;
+}
+/* B. G. L. 03/09/2025 Mensaje de error */
+#login-error {
+    margin-top: 1rem;
+    background: rgba(239, 68, 68, 0.2);
+    padding: 0.6rem;
+    border-radius: 10px;
+    border: 1px solid rgba(239, 68, 68, 0.3);
+    color: #ef4444;
+    text-align: center;
+    font-weight: 500;
+    animation: shake 0.3s;
+}
+/* B. G. L. 03/09/2025 Animacion shake */
+@keyframes shake {
+    0% { transform: translateX(0); }
+    25% { transform: translateX(-5px); }
+    50% { transform: translateX(5px); }
+    75% { transform: translateX(-5px); }
+    100% { transform: translateX(0); }
+}
+/* Responsive */
+@media (max-width: 450px) {
+    main {
+        padding: 2rem;
+        margin: 0 1rem;
+    }
+}
+/* B. G. L. 03/09/2025 Wrapper centrador */
+.login-wrapper {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100vw;
+    height: 100vh;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 1; /* B. G. L. 03/09/2025 delante del canvas */
+}

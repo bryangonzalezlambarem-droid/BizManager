@@ -14,7 +14,7 @@ order_bp = Blueprint("order_bp", __name__)
 VALID_STATUSES = ["Pending", "Processing", "Shipped", "Completed", "Cancelled"]
 
 # B. G. L. 29/08/2025 Crear un nuevo pedido con detalles
-@order_bp.route("/orders", methods=["POST"])
+@order_bp.route("/", methods=["POST"])
 def create_order():
     try:
         data = request.get_json()
@@ -80,7 +80,7 @@ def create_order():
 
 
 # B. G. L. 29/08/2025 Obtener todos los pedidos
-@order_bp.route("/orders", methods=["GET"])
+@order_bp.route("/", methods=["GET"])
 def get_orders():
     orders = Order.query.all()
     return jsonify([
@@ -105,7 +105,7 @@ def get_orders():
     ]), 200
 
 #B. G. L. 29/08/2025 Obtener pedido por ID
-@order_bp.route("/orders/<int:order_id>", methods=["GET"])
+@order_bp.route("/<int:order_id>", methods=["GET"])
 def get_order(order_id):
     order = Order.query.get_or_404(order_id)
     return jsonify({
@@ -127,7 +127,7 @@ def get_order(order_id):
     }), 200
 
 # B. G. L. 29/08/2025 Cambiar el estado de un pedido y guardar historial
-@order_bp.route("/orders/<int:order_id>/status", methods=["PUT"])
+@order_bp.route("/<int:order_id>/status", methods=["PUT"])
 def update_order_status(order_id):
     try:
         data = request.get_json()
@@ -166,7 +166,7 @@ def update_order_status(order_id):
         return jsonify({"error": "Error en la base de datos", "details": str(e)}), 500
 
 # B. G. L. 29/08/2025 Obtener historial de un pedido
-@order_bp.route("/orders/<int:order_id>/history", methods=["GET"])
+@order_bp.route("/<int:order_id>/history", methods=["GET"])
 def get_order_history(order_id):
     history = OrderStatusHistory.query.filter_by(order_id=order_id).all()
     return jsonify([
@@ -180,3 +180,16 @@ def get_order_history(order_id):
         }
         for h in history
     ]), 200
+
+# B. G. L. 03/09/2025 Eliminar un pedido y sus detalles
+@order_bp.route("/<int:order_id>", methods=["DELETE"])
+def delete_order(order_id):
+    try:
+        order = Order.query.get_or_404(order_id)
+        db.session.delete(order)
+        db.session.commit()
+        return jsonify({"message": f"Pedido {order_id} eliminado"}), 200
+    except Exception as e:
+        db.session.rollback()
+        return jsonify({"error": "No se pudo eliminar el pedido", "details": str(e)}), 500
+

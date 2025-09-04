@@ -17,11 +17,10 @@ document.addEventListener("DOMContentLoaded", () => {
     const btnCancelProduct = document.getElementById("product-cancel-btn");
 
     // B. G. L. 25/08/2025 Cargar productos al inicio
-    // Cargar productos
     async function loadProducts() {
         try {
             tableBody.innerHTML = "";
-            const res = await fetch("/api/products"); // 🔧 quité la "/" final para que coincida con backend
+            const res = await fetch("/api/products"); // B. G. L. 03/09/2025 final para que coincida con backend
             if (!res.ok) throw new Error("Error al cargar productos");
             const products = await res.json();
             
@@ -60,24 +59,6 @@ document.addEventListener("DOMContentLoaded", () => {
             const data = await res.json();
             if (!res.ok) throw new Error(data.error || "Error al crear producto");
             alert("Producto creado exitosamente");
-            loadProducts();
-        } catch (err) {
-            console.error(err);
-            alert(err.message);
-        }
-    }
-
-    // B. G. L. 25/08/2025 Editar producto
-    async function editProduct(id, product) {
-        try {
-            const res = await fetch(`/api/products/${id}`, {
-                method: "PUT",
-                headers: { "Content-Type": "application/json"},
-                body: JSON.stringify(product)
-            });
-            const data = await res.json();
-            if (!res.ok) throw new Error(data.error || "Error al actualizar producto");
-            alert("Producto actualizado exitosamente");
             loadProducts();
         } catch (err) {
             console.error(err);
@@ -139,6 +120,13 @@ document.addEventListener("DOMContentLoaded", () => {
         formContainer.style.display = "block";
         errorContainer.style.display = "none";
         successContainer.style.display = "none";
+    });
+
+    btnCancelProduct.addEventListener("click", () => {
+        formContainer.style.display = "none";  
+        form.reset();                          
+        errorContainer.style.display = "none"; 
+        successContainer.style.display = "none"; 
     });
 
     function showMessage(container, message) {

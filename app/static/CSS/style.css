@@ -1,0 +1,141 @@
+/* B. G. L. 03/09/2025 Paleta futurista elegante */
+:root {
+    --color-bg: #0d1117; /* negro azulado */
+    --color-surface: rgba(255, 255, 255, 0.05);
+    --color-border: rgba(255, 255, 255, 0.15);
+    --color-primary: #00f5d4; /* B. G. L. 03/09/2025 verde aqua neon */
+    --color-secondary: #7b2ff7; /* morado neon */
+    --color-text: #e5e7eb;
+    --color-muted: #9ca3af;
+    --radius: 16px;
+    --transition: all 0.3s ease;
+    --shadow: 0 8px 25px rgba(0,0,0,0.5);
+}
+/* B. G. L. 03/09/2025 Reset */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    font-family: "Poppins", "Segoe UI", sans-serif;
+}
+body {
+    background: linear-gradient(135deg, #0d1117, #111827);
+    color: var(--color-text);
+    font-size: 16px;
+    line-height: 1.6;
+}
+/* B. G. L. 03/09/2025 Header / Navbar */
+header {
+    backdrop-filter: blur(12px);
+    background: var(--color-surface);
+    border-bottom: 1px solid var(--color-border);
+    padding: 1rem 2rem;
+    position: sticky;
+    top: 0;
+    z-index: 100;
+}
+nav {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    max-width: 1200px;
+    margin: 0 auto;
+}
+nav ul {
+    display: flex;
+    list-style: none;
+    gap: 2rem;
+}
+nav ul li a {
+    color: var(--color-text);
+    text-decoration: none;
+    font-weight: 500;
+    position: relative;
+    transition: var(--transition);
+}
+nav ul li a:hover {
+    color: var(--color-primary);
+    text-shadow: 0 0 10px var(--color-primary);
+}
+/* B. G. L. 03/09/2025 Usuario */
+#user-info {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    font-size: 0.95rem;
+    color: var(--color-muted);
+}
+#logout-btn {
+    background: linear-gradient(90deg, var(--color-primary), var(--color-secondary));
+    border: none;
+    padding: 0.6rem 1.2rem;
+    border-radius: var(--radius);
+    cursor: pointer;
+    transition: var(--transition);
+    color: #fff;
+    font-weight: 600;
+    box-shadow: var(--shadow);
+}
+#logout-btn:hover {
+    transform: scale(1.05);
+}
+/* B. G. L. 03/09/2025 Mensajes */
+#global-messages {
+    max-width: 1000px;
+    margin: 1.5rem auto;
+    padding: 1rem;
+    border-radius: var(--radius);
+    background: var(--color-surface);
+    border: 1px solid var(--color-border);
+    text-align: center;
+    backdrop-filter: blur(8px);
+}
+/* B. G. L. 03/09/2025 Loader */
+#global-loader {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    background: rgba(0, 0, 0, 0.85);
+    position: fixed;
+    inset: 0;
+    z-index: 200;
+    color: var(--color-text);
+}
+.spinner {
+    border: 5px solid var(--color-border);
+    border-top: 5px solid var(--color-primary);
+    border-radius: 50%;
+    width: 55px;
+    height: 55px;
+    animation: spin 1s linear infinite;
+    margin-bottom: 1rem;
+}
+@keyframes spin {
+    100% { transform: rotate(360deg); }
+}
+/* B. G. L. 03/09/2025 Main */
+main {
+    max-width: 1200px;
+    margin: 2rem auto;
+    padding: 0 2rem;
+}
+main > div {
+    background: var(--color-surface);
+    backdrop-filter: blur(10px);
+    padding: 2rem;
+    border-radius: var(--radius);
+    box-shadow: var(--shadow);
+    border: 1px solid var(--color-border);
+}
+/* B. G. L. 03/09/2025 Footer */
+footer {
+    text-align: center;
+    padding: 1.5rem;
+    background: var(--color-surface);
+    backdrop-filter: blur(8px);
+    border-top: 1px solid var(--color-border);
+    font-size: 0.9rem;
+    color: var(--color-muted);
+    margin-top: 3rem;
+}

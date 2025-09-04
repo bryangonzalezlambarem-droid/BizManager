@@ -1,0 +1,149 @@
+/* B. G. L. 03/09/2025 Titulo */
+h1 {
+    font-size: 2rem;
+    font-weight: 600;
+    margin-bottom: 1.5rem;
+    color: #06b6d4; 
+    text-shadow: 0 0 12px rgba(6, 182, 212, 0.7);
+}
+/* B. G. L. 03/09/2025 Boton "Nuevo Pedido" */
+#btn-new-order {
+    background: linear-gradient(90deg, #0ea5e9, #06b6d4); /* B. G. L. 03/09/2025 azul → cian */
+    color: #fff;
+    border: none;
+    padding: 0.8rem 1.5rem;
+    border-radius: var(--radius);
+    font-size: 1rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: var(--transition);
+    box-shadow: var(--shadow);
+    margin-bottom: 1.5rem;
+}
+#btn-new-order:hover {
+    transform: translateY(-2px) scale(1.03);
+    box-shadow: 0 0 18px #06b6d4;
+}
+/* B. G. L. 03/09/2025 Tabla de Pedidos */
+#orders-table {
+    width: 100%;
+    border-collapse: collapse;
+    border-radius: var(--radius);
+    overflow: hidden;
+    background: var(--color-surface);
+    backdrop-filter: blur(10px);
+    box-shadow: var(--shadow);
+}
+#orders-table thead {
+    background: linear-gradient(90deg, #0ea5e9, #06b6d4);
+    color: #fff;
+    text-align: left;
+}
+#orders-table th,
+#orders-table td {
+    padding: 1rem;
+    border-bottom: 1px solid var(--color-border);
+}
+#orders-table tbody tr {
+    transition: var(--transition);
+}
+#orders-table tbody tr:hover {
+    background: rgba(255, 255, 255, 0.05);
+}
+/* B. G. L. 03/09/2025 Botones de accion */
+#orders-table button {
+    border: none;
+    padding: 0.4rem 0.8rem;
+    border-radius: var(--radius);
+    font-size: 0.9rem;
+    cursor: pointer;
+    font-weight: 500;
+    margin-right: 0.4rem;
+    transition: var(--transition);
+}
+/* B. G. L. 03/09/2025 Boton Ver */
+#orders-table .btn-view {
+    background: rgba(6, 182, 212, 0.15);
+    color: #06b6d4;
+    border: 1px solid rgba(6, 182, 212, 0.3);
+}
+#orders-table .btn-view:hover {
+    background: rgba(6, 182, 212, 0.25);
+}
+/* B. G. L. 03/09/2025 Boton Editar */
+#orders-table .btn-edit {
+    background: rgba(14, 165, 233, 0.15);
+    color: #0ea5e9;
+    border: 1px solid rgba(14, 165, 233, 0.3);
+}
+#orders-table .btn-edit:hover {
+    background: rgba(14, 165, 233, 0.25);
+}
+/* B. G. L. 03/09/2025 Boton Eliminar */
+#orders-table .btn-delete {
+    background: rgba(239, 68, 68, 0.15);
+    color: #ef4444;
+    border: 1px solid rgba(239, 68, 68, 0.3);
+}
+#orders-table .btn-delete:hover {
+    background: rgba(239, 68, 68, 0.25);
+}
+/* B. G. L. 03/09/2025 Formulario de Pedidos */
+#order-form-container {
+    margin-top: 2rem;
+    background: var(--color-surface);
+    padding: 1.5rem;
+    border-radius: var(--radius);
+    box-shadow: var(--shadow);
+    display: none;
+}
+#order-form-container h2 {
+    margin-bottom: 1rem;
+    color: #0ea5e9;
+    text-shadow: 0 0 8px rgba(14, 165, 233, 0.6);
+}
+#order-form label {
+    display: block;
+    margin-top: 0.8rem;
+    font-weight: 500;
+    color: var(--color-text);
+}
+#order-form input,
+#order-form select {
+    width: 100%;
+    padding: 0.6rem;
+    margin-top: 0.3rem;
+    border-radius: var(--radius);
+    border: 1px solid var(--color-border);
+    background: var(--color-bg);
+    color: var(--color-text);
+}
+/* B. G. L. 03/09/2025 Botones del form */
+#order-form button {
+    margin-top: 1rem;
+    padding: 0.7rem 1.2rem;
+    border: none;
+    border-radius: var(--radius);
+    font-size: 1rem;
+    cursor: pointer;
+    font-weight: 600;
+    transition: var(--transition);
+}
+/* B. G. L. 03/09/2025 Guardar */
+#order-form button[type="submit"] {
+    background: linear-gradient(90deg, #06b6d4, #0ea5e9);
+    color: #fff;
+}
+#order-form button[type="submit"]:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 0 12px #06b6d4;
+}
+/* B. G. L. 03/09/2025 Cancelar */
+#cancel-form {
+    background: rgba(239, 68, 68, 0.15);
+    color: #ef4444;
+    margin-left: 0.5rem;
+}
+#cancel-form:hover {
+    background: rgba(239, 68, 68, 0.25);
+}

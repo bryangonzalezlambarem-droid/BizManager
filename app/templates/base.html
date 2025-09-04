@@ -6,6 +6,9 @@
     <title>{% block title %}BizManager{% endblock %}</title>
     <!-- B. G. L. 25/08/2025 CSS -->
     <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+    {% block styles %}
+    <!-- B. G. L. 03/09/2025 se inyectan estilos especificos por pagina -->
+    {% endblock %}
     <meta name="description" content="BizManager - Sistema de gestión de clientes, productos, vendedores y pedidos">
 </head>
 <body>

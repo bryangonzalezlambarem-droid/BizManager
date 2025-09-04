@@ -1,4 +1,4 @@
-from flask import Blueprint, request, jsonify
+from flask import Blueprint, request, jsonify, session
 from sqlalchemy.exc import SQLAlchemyError
 from app import db
 from app.models.product import Product
@@ -12,7 +12,7 @@ def create_product():
     try:
         data = request.get_json()
 
-        required_fields = ["name", "description", "price", "stock", "salesman_id"]
+        required_fields = ["name", "description", "price", "stock"]
         for field in required_fields:
             if field not in data:
                 return jsonify({"error": f"Falta el campo {field}"}), 400
@@ -23,12 +23,17 @@ def create_product():
         if not isinstance(data["stock"], int) or data["stock"] < 0:
             return jsonify({"error": "El stock debe ser un número entero positivo"}), 400
 
+        # Obtener salesman_id desde sesión
+        salesman_id = session.get("salesman_id")
+        if not salesman_id:
+            return jsonify({"error": "Debes iniciar sesión para crear un producto"}), 401
+
         new_product = Product(
             name=data["name"],
             description=data["description"],
             price=data["price"],
             stock=data["stock"],
-            salesman_id=data["salesman_id"]
+            salesman_id=salesman_id
         )
         db.session.add(new_product)
         db.session.commit()

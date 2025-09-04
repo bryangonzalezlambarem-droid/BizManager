@@ -11,9 +11,19 @@ class Order(db.Model):
     total_amount = db.Column(db.Numeric(10, 2), default=0)
 
     # B. G. L. 22/08/2025 Relacion con detalles de pedido
-    order_details = db.relationship('OrderDetail', backref='order', lazy=True)
+    order_details = db.relationship(
+        'OrderDetail',
+        backref='order',
+        lazy=True,
+        cascade="all, delete-orphan"  # <<-- B. G. L. 03/09/2025 borrado en cascada
+    )
     # B. G. L. 22/08/2025 Relacion con historial de estados
-    status_history = db.relationship('OrderStatusHistory', backref='order', lazy=True)
+    status_history = db.relationship(
+        'OrderStatusHistory',
+        backref='order',
+        lazy=True,
+        cascade="all, delete-orphan"  # <<--  B. G. L. 03/09/2025 borrado en cascada
+    )
 
     def __repr__(self):
         return f"<Order {self.order_id} - {self.status}>"

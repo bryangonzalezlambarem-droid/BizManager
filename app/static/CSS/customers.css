@@ -1,0 +1,164 @@
+/* B. G. L. 03/09/2025 Titulo */
+h1 {
+    font-size: 2rem;
+    font-weight: 600;
+    margin-bottom: 1.5rem;
+    color: var(--color-primary);
+    text-shadow: 0 0 10px rgba(0, 245, 212, 0.4);
+}
+/* B. G. L. 03/09/2025 Boton "Nuevo Cliente" */
+#btn-new-customer {
+    background: linear-gradient(90deg, var(--color-primary), var(--color-secondary));
+    color: #fff;
+    border: none;
+    padding: 0.8rem 1.5rem;
+    border-radius: var(--radius);
+    font-size: 1rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: var(--transition);
+    box-shadow: var(--shadow);
+    margin-bottom: 1.5rem;
+}
+#btn-new-customer:hover {
+    transform: translateY(-2px) scale(1.03);
+    box-shadow: 0 0 15px var(--color-primary);
+}
+/* B. G. L. 03/09/2025 Mensajes */
+#error-container {
+    display: none;
+    padding: 0.8rem;
+    margin-bottom: 1rem;
+    border-radius: var(--radius);
+    background: rgba(255, 0, 0, 0.1);
+    color: #f87171;
+    border: 1px solid rgba(239, 68, 68, 0.5);
+}
+#success-container {
+    display: none;
+    padding: 0.8rem;
+    margin-bottom: 1rem;
+    border-radius: var(--radius);
+    background: rgba(16, 185, 129, 0.1);
+    color: #34d399;
+    border: 1px solid rgba(16, 185, 129, 0.5);
+}
+/* B. G. L. 03/09/2025 Tabla de Clientes */
+#customers-table {
+    width: 100%;
+    border-collapse: collapse;
+    border-radius: var(--radius);
+    overflow: hidden;
+    background: var(--color-surface);
+    backdrop-filter: blur(10px);
+    box-shadow: var(--shadow);
+}
+#customers-table thead {
+    background: linear-gradient(90deg, var(--color-primary), var(--color-secondary));
+    color: #fff;
+    text-align: left;
+}
+#customers-table th,
+#customers-table td {
+    padding: 1rem;
+    border-bottom: 1px solid var(--color-border);
+}
+#customers-table tbody tr {
+    transition: var(--transition);
+}
+#customers-table tbody tr:hover {
+    background: rgba(255, 255, 255, 0.05);
+}
+/* B. G. L. 03/09/2025 Formulario Cliente */
+#customer-form-container {
+    margin-top: 2rem;
+    background: var(--color-surface);
+    backdrop-filter: blur(8px);
+    padding: 1.5rem;
+    border-radius: var(--radius);
+    box-shadow: var(--shadow);
+    border: 1px solid var(--color-border);
+}
+#customer-form-container h3 {
+    margin-bottom: 1rem;
+    color: var(--color-secondary);
+    text-shadow: 0 0 6px rgba(123, 47, 247, 0.4);
+}
+#customer-form label {
+    display: block;
+    margin: 0.8rem 0;
+    font-weight: 500;
+    color: var(--color-text);
+}
+#customer-form input {
+    width: 100%;
+    padding: 0.6rem 0.8rem;
+    border-radius: var(--radius);
+    border: 1px solid var(--color-border);
+    background: rgba(255, 255, 255, 0.07);
+    color: var(--color-text);
+    transition: var(--transition);
+}
+#customer-form input:focus {
+    outline: none;
+    border-color: var(--color-primary);
+    box-shadow: 0 0 8px var(--color-primary);
+}
+/* B. G. L. 03/09/2025 Botones del Formulario */
+#customer-form button {
+    margin-top: 1rem;
+    padding: 0.6rem 1.2rem;
+    border-radius: var(--radius);
+    border: none;
+    cursor: pointer;
+    font-weight: 600;
+    transition: var(--transition);
+}
+#customer-form button[type="submit"] {
+    background: linear-gradient(90deg, var(--color-primary), var(--color-secondary));
+    color: #fff;
+    margin-right: 1rem;
+    box-shadow: var(--shadow);
+}
+#customer-form button[type="submit"]:hover {
+    transform: scale(1.05);
+}
+#customer-form #cancel-btn {
+    background: rgba(255, 255, 255, 0.08);
+    color: var(--color-text);
+    border: 1px solid var(--color-border);
+}
+#customer-form #cancel-btn:hover {
+    background: rgba(255, 255, 255, 0.15);
+}
+/* B. G. L. 03/09/2025 Botones de accion en la tabla de Clientes */
+#customers-table button {
+    border: none;
+    padding: 0.4rem 0.8rem;
+    border-radius: var(--radius);
+    font-size: 0.9rem;
+    cursor: pointer;
+    font-weight: 500;
+    margin-right: 0.4rem;
+    transition: var(--transition);
+}
+/* B. G. L. 03/09/2025 Boton Editar */
+#customers-table .btn-edit {
+    background: linear-gradient(90deg, #38bdf8, #0ea5e9); /* B. G. L. 03/09/2025 azul cielo → azul fuerte */
+    color: #fff;
+    border: 1px solid #0ea5e9;
+    box-shadow: 0 0 4px rgba(14, 165, 233, 0.4);
+}
+#customers-table .btn-edit:hover {
+    background: linear-gradient(90deg, #0ea5e9, #6366f1); /* B. G. L. 03/09/2025 azul fuerte → morado */
+    box-shadow: 0 0 8px rgba(14, 165, 233, 0.6);
+}
+/* B. G. L. 03/09/2025 Boton Eliminar */
+#customers-table .btn-delete {
+    background: rgba(239, 68, 68, 0.15); /* B. G. L. 03/09/2025 rojo suave */
+    color: #ef4444;
+    border: 1px solid rgba(239, 68, 68, 0.3);
+}
+#customers-table .btn-delete:hover {
+    background: rgba(239, 68, 68, 0.25);
+}

@@ -1,0 +1,171 @@
+/* B. G. L. 03/09/2025 Titulo */
+h1 {
+    font-size: 2rem;
+    font-weight: 600;
+    margin-bottom: 1.5rem;
+    color: var(--color-secondary); /* B. G. L. 03/09/2025 usamos el morado */
+    text-shadow: 0 0 10px rgba(123, 47, 247, 0.4);
+}
+/* B. G. L. 03/09/2025 Boton "Nuevo Producto" */
+#btn-new-product {
+    background: linear-gradient(90deg, var(--color-secondary), var(--color-primary));
+    color: #fff;
+    border: none;
+    padding: 0.8rem 1.5rem;
+    border-radius: var(--radius);
+    font-size: 1rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: var(--transition);
+    box-shadow: var(--shadow);
+    margin-bottom: 1.5rem;
+}
+#btn-new-product:hover {
+    transform: translateY(-2px) scale(1.03);
+    box-shadow: 0 0 15px var(--color-secondary);
+}
+/* B. G. L. 03/09/2025 Tabla de Productos */
+#products-table {
+    width: 100%;
+    border-collapse: collapse;
+    border-radius: var(--radius);
+    overflow: hidden;
+    background: var(--color-surface);
+    backdrop-filter: blur(10px);
+    box-shadow: var(--shadow);
+}
+#products-table thead {
+    background: linear-gradient(90deg, var(--color-secondary), var(--color-primary));
+    color: #fff;
+    text-align: left;
+}
+#products-table th,
+#products-table td {
+    padding: 1rem;
+    border-bottom: 1px solid var(--color-border);
+}
+#products-table tbody tr {
+    transition: var(--transition);
+}
+#products-table tbody tr:hover {
+    background: rgba(255, 255, 255, 0.05);
+}
+/* B. G. L. 03/09/2025 Formulario de Producto */
+#product-form-container {
+    margin-top: 2rem;
+    background: var(--color-surface);
+    backdrop-filter: blur(8px);
+    padding: 1.5rem;
+    border-radius: var(--radius);
+    box-shadow: var(--shadow);
+    border: 1px solid var(--color-border);
+}
+#product-form-container h3 {
+    margin-bottom: 1rem;
+    color: var(--color-primary);
+    text-shadow: 0 0 6px rgba(0, 245, 212, 0.4);
+}
+#product-form label {
+    display: block;
+    margin: 0.8rem 0;
+    font-weight: 500;
+    color: var(--color-text);
+}
+#product-form input {
+    width: 100%;
+    padding: 0.6rem 0.8rem;
+    border-radius: var(--radius);
+    border: 1px solid var(--color-border);
+    background: rgba(255, 255, 255, 0.07);
+    color: var(--color-text);
+    transition: var(--transition);
+}
+#product-form input:focus {
+    outline: none;
+    border-color: var(--color-secondary);
+    box-shadow: 0 0 8px var(--color-secondary);
+}
+/* B. G. L. 03/09/2025 Botones del Formulario */
+#product-form button {
+    margin-top: 1rem;
+    padding: 0.6rem 1.2rem;
+    border-radius: var(--radius);
+    border: none;
+    cursor: pointer;
+    font-weight: 600;
+    transition: var(--transition);
+}
+#product-form button[type="submit"] {
+    background: linear-gradient(90deg, var(--color-secondary), var(--color-primary));
+    color: #fff;
+    margin-right: 1rem;
+    box-shadow: var(--shadow);
+}
+#product-form button[type="submit"]:hover {
+    transform: scale(1.05);
+}
+#product-form #product-cancel-btn {
+    background: rgba(255, 255, 255, 0.08);
+    color: var(--color-text);
+    border: 1px solid var(--color-border);
+}
+#product-form #product-cancel-btn:hover {
+    background: rgba(255, 255, 255, 0.15);
+}
+/* B. G. L. 03/09/2025 Mensajes del Formulario */
+#product-error-container {
+    display: none;
+    padding: 0.8rem;
+    margin-top: 1rem;
+    border-radius: var(--radius);
+    background: rgba(255, 0, 0, 0.1);
+    color: #f87171;
+    border: 1px solid rgba(239, 68, 68, 0.5);
+}
+#product-success-container {
+    display: none;
+    padding: 0.8rem;
+    margin-top: 1rem;
+    border-radius: var(--radius);
+    background: rgba(16, 185, 129, 0.1);
+    color: #34d399;
+    border: 1px solid rgba(16, 185, 129, 0.5);
+}
+/* B. G. L. 03/09/2025 Botones de accion en la tabla de Productos */
+#products-table button {
+    border: none;
+    padding: 0.4rem 0.8rem;
+    border-radius: var(--radius);
+    font-size: 0.9rem;
+    cursor: pointer;
+    font-weight: 500;
+    margin-right: 0.4rem;
+    transition: var(--transition);
+}
+/* B. G. L. 03/09/2025 Boton Ver */
+#products-table .btn-view {
+    background: rgba(139, 92, 246, 0.15); /* B. G. L. 03/09/2025 morado suave */
+    color: #8b5cf6;
+    border: 1px solid rgba(139, 92, 246, 0.3);
+}
+#products-table .btn-view:hover {
+    background: rgba(139, 92, 246, 0.25);
+}
+/* B. G. L. 03/09/2025 Boton Editar */
+#products-table .btn-edit {
+    background: rgba(6, 182, 212, 0.15); /* B. G. L. 03/09/2025 turquesa suave */
+    color: #06b6d4;
+    border: 1px solid rgba(6, 182, 212, 0.3);
+}
+#products-table .btn-edit:hover {
+    background: rgba(6, 182, 212, 0.25);
+}
+/* B. G. L. 03/09/2025 Boton Eliminar */
+#products-table .btn-delete {
+    background: rgba(239, 68, 68, 0.15); /* B. G. L. 03/09/2025 rojo suave */
+    color: #ef4444;
+    border: 1px solid rgba(239, 68, 68, 0.3);
+}
+#products-table .btn-delete:hover {
+    background: rgba(239, 68, 68, 0.25);
+}

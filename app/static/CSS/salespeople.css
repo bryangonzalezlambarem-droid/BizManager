@@ -1,0 +1,91 @@
+/* B. G. L. 03/09/2025 Titulo */
+h1 {
+    font-size: 2rem;
+    font-weight: 600;
+    margin-bottom: 1.5rem;
+    color: #f59e0b; /* dorado */
+    text-shadow: 0 0 10px rgba(245, 158, 11, 0.5);
+}
+
+/* B. G. L. 03/09/2025 Boton "Nuevo Vendedor" */
+#btn-new-salesperson {
+    background: linear-gradient(90deg, #f59e0b, #ef4444); /* B. G. L. 03/09/2025 dorado → rojo */
+    color: #fff;
+    border: none;
+    padding: 0.8rem 1.5rem;
+    border-radius: var(--radius);
+    font-size: 1rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: var(--transition);
+    box-shadow: var(--shadow);
+    margin-bottom: 1.5rem;
+}
+#btn-new-salesperson:hover {
+    transform: translateY(-2px) scale(1.03);
+    box-shadow: 0 0 15px #f59e0b;
+}
+/* B. G. L. 03/09/2025 Tabla de Vendedores */
+#salespeople-table {
+    width: 100%;
+    border-collapse: collapse;
+    border-radius: var(--radius);
+    overflow: hidden;
+    background: var(--color-surface);
+    backdrop-filter: blur(10px);
+    box-shadow: var(--shadow);
+}
+#salespeople-table thead {
+    background: linear-gradient(90deg, #f59e0b, #ef4444);
+    color: #fff;
+    text-align: left;
+}
+#salespeople-table th,
+#salespeople-table td {
+    padding: 1rem;
+    border-bottom: 1px solid var(--color-border);
+}
+#salespeople-table tbody tr {
+    transition: var(--transition);
+}
+#salespeople-table tbody tr:hover {
+    background: rgba(255, 255, 255, 0.05);
+}
+/* B. G. L. 03/09/2025 Botones de accion */
+#salespeople-table button {
+    border: none;
+    padding: 0.4rem 0.8rem;
+    border-radius: var(--radius);
+    font-size: 0.9rem;
+    cursor: pointer;
+    font-weight: 500;
+    margin-right: 0.4rem;
+    transition: var(--transition);
+}
+/* B. G. L. 03/09/2025 Boton Ver */
+#salespeople-table .btn-view {
+    background: rgba(59, 130, 246, 0.15);
+    color: #3b82f6;
+    border: 1px solid rgba(59, 130, 246, 0.3);
+}
+#salespeople-table .btn-view:hover {
+    background: rgba(59, 130, 246, 0.25);
+}
+/* B. G. L. 03/09/2025 Boton Editar */
+#salespeople-table .btn-edit {
+    background: rgba(245, 158, 11, 0.15);
+    color: #f59e0b;
+    border: 1px solid rgba(245, 158, 11, 0.3);
+}
+#salespeople-table .btn-edit:hover {
+    background: rgba(245, 158, 11, 0.25);
+}
+/* B. G. L. 03/09/2025 Boton Eliminar */
+#salespeople-table .btn-delete {
+    background: rgba(239, 68, 68, 0.15);
+    color: #ef4444;
+    border: 1px solid rgba(239, 68, 68, 0.3);
+}
+#salespeople-table .btn-delete:hover {
+    background: rgba(239, 68, 68, 0.25);
+}

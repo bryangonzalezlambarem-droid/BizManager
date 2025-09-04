@@ -2,6 +2,10 @@
 
 {% block title %}Pedidos - BizManager{% endblock %}
 
+{% block styles %}
+<link rel="stylesheet" href="{{ url_for('static', filename='css/orders.css') }}">
+{% endblock %}
+
 {% block content %}
 <h1>Pedidos</h1>
 
@@ -33,11 +37,14 @@
             <td>
                 <button class="btn-view" data-id="{{ order.order_id }}">Ver</button>
                 <button class="btn-edit" data-id="{{ order.order_id }}">Editar</button>
+                <button class="btn-delete" data-id="{{ order.order_id }}">Eliminar</button>
             </td>
         </tr>
         {% endfor %}
     </tbody>
 </table>
+
+<div id="products-data" data-products='{{ products|tojson | safe }}'></div>
 
 <!-- B. G. L. 25/08/2025 Modal o seccion para crear/editar pedidos -->
 <div id="order-form-container" style="display:none;">
@@ -68,7 +75,6 @@
     </form>
 </div>
 {% endblock %}
-<div id="products-data" data-products='{{ products|tojson | safe }}'></div>
 
 {% block scripts %}
 <script src="{{ url_for('static', filename='js/orders.js') }}"></script>
