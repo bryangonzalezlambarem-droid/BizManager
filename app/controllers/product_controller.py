@@ -2,9 +2,16 @@ from flask import Blueprint, request, jsonify, session
 from sqlalchemy.exc import SQLAlchemyError
 from app import db
 from app.models.product import Product
+from markupsafe import escape
 
-#B. G. L. 25/08/2025 Crear blueprint para la tabla Product
+# B. G. L. 25/08/2025 Crear blueprint para la tabla Product
 product_bp = Blueprint("product_bp", __name__)
+
+# B. G. L. 04/09/2025 Sanitizar entradas para prevenir XSS
+def sanitize_input(value):
+    if isinstance(value, str):
+        return escape(value.strip())
+    return value
 
 # B. G. L. 25/08/2025 Crear producto
 @product_bp.route("/", methods=["POST"])
@@ -25,14 +32,14 @@ def create_product():
 
         # Obtener salesman_id desde sesión
         salesman_id = session.get("salesman_id")
-        if not salesman_id:
+        if not salesman_id or not isinstance(salesman_id, int):
             return jsonify({"error": "Debes iniciar sesión para crear un producto"}), 401
 
         new_product = Product(
-            name=data["name"],
-            description=data["description"],
-            price=data["price"],
-            stock=data["stock"],
+            name=sanitize_input(data["name"]),
+            description=sanitize_input(data["description"]),
+            price=float(data["price"]),
+            stock=int(data["stock"]),
             salesman_id=salesman_id
         )
         db.session.add(new_product)
@@ -45,6 +52,7 @@ def create_product():
     except Exception as e:
         db.session.rollback()
         return jsonify({"error": "Error interno", "details": str(e)}), 500
+
 
 # B. G. L. 25/08/2025 Obtener todos los productos
 @product_bp.route("/", methods=["GET"])
@@ -64,10 +72,14 @@ def get_products():
     except SQLAlchemyError as e:
         return jsonify({"error": "Error en la base de datos", "details": str(e)}), 500
 
+
 # B. G. L. 25/08/2025 Obtener producto por ID
 @product_bp.route("/<int:product_id>", methods=["GET"])
 def get_product(product_id):
     try:
+        if product_id <= 0:
+            return jsonify({"error": "ID inválido"}), 400
+
         product = Product.query.get_or_404(product_id)
         return jsonify({
             "product_id": product.product_id,
@@ -80,18 +92,22 @@ def get_product(product_id):
     except SQLAlchemyError as e:
         return jsonify({"error": "Error en la base de datos", "details": str(e)}), 500
 
+
 # B. G. L. 25/08/2025 Actualizar producto
 @product_bp.route("/<int:product_id>", methods=["PUT"])
 def update_product(product_id):
     try:
+        if product_id <= 0:
+            return jsonify({"error": "ID inválido"}), 400
+
         product = Product.query.get_or_404(product_id)
         data = request.get_json()
 
         if "name" in data:
-            product.name = data["name"]
+            product.name = sanitize_input(data["name"])
 
         if "description" in data:
-            product.description = data["description"]
+            product.description = sanitize_input(data["description"])
 
         if "price" in data:
             try:
@@ -112,6 +128,8 @@ def update_product(product_id):
                 return jsonify({"error": "El stock debe ser un número entero"}), 400
 
         if "salesman_id" in data:
+            if not isinstance(data["salesman_id"], int) or data["salesman_id"] <= 0:
+                return jsonify({"error": "salesman_id inválido"}), 400
             product.salesman_id = data["salesman_id"]
 
         db.session.commit()
@@ -124,10 +142,14 @@ def update_product(product_id):
         db.session.rollback()
         return jsonify({"error": "Error interno", "details": str(e)}), 500
 
+
 # B. G. L. 25/08/2025 Eliminar producto
 @product_bp.route("/<int:product_id>", methods=["DELETE"])
 def delete_product(product_id):
     try:
+        if product_id <= 0:
+            return jsonify({"error": "ID inválido"}), 400
+
         product = Product.query.get_or_404(product_id)
         db.session.delete(product)
         db.session.commit()

@@ -6,12 +6,19 @@ from app.models.order_detail import OrderDetail
 from app.models.product import Product
 from app.models.order_status_history import OrderStatusHistory
 from datetime import datetime
+from markupsafe import escape
 
 # B. G. L. 25/08/2025 Crear blueprint para la tabla order
 order_bp = Blueprint("order_bp", __name__)
 
-# B. G. L. 29/08/2025 Lista de estados validos
+# B. G. L. 29/08/2025 Lista de estados válidos
 VALID_STATUSES = ["Pending", "Processing", "Shipped", "Completed", "Cancelled"]
+
+# B. G. L. 04/09/2025 Sanitizar entradas para prevenir XSS
+def sanitize_input(value):
+    if isinstance(value, str):
+        return escape(value.strip())
+    return value
 
 # B. G. L. 29/08/2025 Crear un nuevo pedido con detalles
 @order_bp.route("/", methods=["POST"])
@@ -19,9 +26,11 @@ def create_order():
     try:
         data = request.get_json()
 
-        # B. G. L. 29/08/2025 Validaciones basicas
         if not data or "customer_id" not in data or "details" not in data:
             return jsonify({"error": "Datos incompletos: se requiere customer_id y details"}), 400
+
+        if not isinstance(data["customer_id"], int) or data["customer_id"] <= 0:
+            return jsonify({"error": "customer_id inválido"}), 400
 
         if not isinstance(data["details"], list) or len(data["details"]) == 0:
             return jsonify({"error": "La lista de detalles no puede estar vacía"}), 400
@@ -29,7 +38,7 @@ def create_order():
         new_order = Order(
             customer_id=data["customer_id"],
             order_date=data.get("order_date", datetime.utcnow()),
-            status=data.get("status", "Pending") if data.get("status") in VALID_STATUSES else "Pending",
+            status=data.get("status") if data.get("status") in VALID_STATUSES else "Pending",
             total_amount=0
         )
         db.session.add(new_order)
@@ -37,34 +46,38 @@ def create_order():
 
         total_amount = 0
         for detail in data["details"]:
-            if "product_id" not in detail or "quantity" not in detail:
-                return jsonify({"error": "Cada detalle debe incluir product_id y quantity"}), 400
+            product_id = detail.get("product_id")
+            quantity = detail.get("quantity")
 
-            product = Product.query.get(detail["product_id"])
+            if not isinstance(product_id, int) or product_id <= 0:
+                return jsonify({"error": "product_id inválido"}), 400
+            if not isinstance(quantity, int) or quantity <= 0:
+                return jsonify({"error": f"Cantidad inválida para producto {product_id}"}), 400
+
+            product = Product.query.get(product_id)
             if not product:
                 db.session.rollback()
-                return jsonify({"error": f"Producto {detail['product_id']} no encontrado"}), 404
+                return jsonify({"error": f"Producto {product_id} no encontrado"}), 404
 
-            if product.stock < detail["quantity"]:
+            if product.stock < quantity:
                 db.session.rollback()
                 return jsonify({"error": f"Stock insuficiente para {product.name}"}), 400
 
-            # B. G. L. 29/08/2025 Usar el precio real de la BD (seguridad)
             unit_price = float(product.price)
-            line_total = detail["quantity"] * unit_price
+            line_total = quantity * unit_price
             total_amount += line_total
 
             order_detail = OrderDetail(
                 order_id=new_order.order_id,
-                product_id=detail["product_id"],
+                product_id=product_id,
                 salesman_id=detail.get("salesman_id"),
-                quantity=detail["quantity"],
+                quantity=quantity,
                 unit_price=unit_price
             )
             db.session.add(order_detail)
 
-            # B. G. L. 29/08/2025 Reducir stock
-            product.stock -= detail["quantity"]
+            # Reducir stock
+            product.stock -= quantity
 
         new_order.total_amount = total_amount
         db.session.commit()
@@ -104,9 +117,13 @@ def get_orders():
         for o in orders
     ]), 200
 
-#B. G. L. 29/08/2025 Obtener pedido por ID
+
+# B. G. L. 29/08/2025 Obtener pedido por ID
 @order_bp.route("/<int:order_id>", methods=["GET"])
 def get_order(order_id):
+    if order_id <= 0:
+        return jsonify({"error": "order_id inválido"}), 400
+
     order = Order.query.get_or_404(order_id)
     return jsonify({
         "order_id": order.order_id,
@@ -126,13 +143,17 @@ def get_order(order_id):
         ]
     }), 200
 
+
 # B. G. L. 29/08/2025 Cambiar el estado de un pedido y guardar historial
 @order_bp.route("/<int:order_id>/status", methods=["PUT"])
 def update_order_status(order_id):
     try:
+        if order_id <= 0:
+            return jsonify({"error": "order_id inválido"}), 400
+
         data = request.get_json()
         new_status = data.get("new_status")
-        changed_by = data.get("changed_by", "system")
+        changed_by = sanitize_input(data.get("changed_by", "system"))
 
         if not new_status or new_status not in VALID_STATUSES:
             return jsonify({"error": "Estado inválido"}), 400
@@ -165,9 +186,13 @@ def update_order_status(order_id):
         db.session.rollback()
         return jsonify({"error": "Error en la base de datos", "details": str(e)}), 500
 
+
 # B. G. L. 29/08/2025 Obtener historial de un pedido
 @order_bp.route("/<int:order_id>/history", methods=["GET"])
 def get_order_history(order_id):
+    if order_id <= 0:
+        return jsonify({"error": "order_id inválido"}), 400
+
     history = OrderStatusHistory.query.filter_by(order_id=order_id).all()
     return jsonify([
         {
@@ -181,10 +206,14 @@ def get_order_history(order_id):
         for h in history
     ]), 200
 
+
 # B. G. L. 03/09/2025 Eliminar un pedido y sus detalles
 @order_bp.route("/<int:order_id>", methods=["DELETE"])
 def delete_order(order_id):
     try:
+        if order_id <= 0:
+            return jsonify({"error": "order_id inválido"}), 400
+
         order = Order.query.get_or_404(order_id)
         db.session.delete(order)
         db.session.commit()
@@ -192,4 +221,3 @@ def delete_order(order_id):
     except Exception as e:
         db.session.rollback()
         return jsonify({"error": "No se pudo eliminar el pedido", "details": str(e)}), 500
-

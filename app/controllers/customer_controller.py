@@ -4,9 +4,16 @@ from app.models.customer import Customer
 from sqlalchemy.exc import SQLAlchemyError, IntegrityError
 import re
 from datetime import datetime
+from markupsafe import escape
 
 # B. G. L. 25/08/2025 Crear blueprint para la tabla customer
 customer_bp = Blueprint("customer_bp", __name__)
+
+# B. G. L. 04/09/2025 Sanitizar los elementos que pasa en fronted
+def sanitize_input(value):
+    if isinstance(value, str):
+        return escape(value.strip())  # B. G. L. 25/08/2025 quita espacios y escapa HTML/JS
+    return value
 
 # B. G. L. 25/08/2025 Funcion para validar email
 def is_valid_email(email):
@@ -53,10 +60,10 @@ def create_customer():
             return jsonify({"error": "Ya existe un cliente con este email"}), 409
         
         new_customer = Customer(
-            name=data.get("name"),
-            email=data.get("email"),
-            phone=data.get("phone"),
-            address=data.get("address")
+            name=sanitize_input(data.get("name")),
+            email=sanitize_input(data.get("email")),
+            phone=sanitize_input(data.get("phone")),
+            address=sanitize_input(data.get("address"))
         )
         
         db.session.add(new_customer)
@@ -179,13 +186,13 @@ def update_customer(id):
         
         # B. G. L. 25/08/2025 Actualizar campos
         if "name" in data:
-            customer.name = data["name"]
+            customer.name = sanitize_input(data["name"])
         if "email" in data:
-            customer.email = data["email"]
+            customer.email = sanitize_input(data["email"])
         if "phone" in data:
-            customer.phone = data["phone"]
+            customer.phone = sanitize_input(data["phone"])
         if "address" in data:
-            customer.address = data["address"]
+            customer.address = sanitize_input(data["address"])
         
         customer.updated_at = datetime.utcnow()
         
