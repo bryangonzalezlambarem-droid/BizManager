@@ -22,9 +22,9 @@
                 <li><a href="{{ url_for('index') }}">Pedidos</a></li>
             </ul>
 
-            {% if session.get('salesman_name') %}
+            {% if user %}
             <div id="user-info">
-                <span>Hola, {{ session.salesman_name }}</span>
+                <span>Hola, {{ user.name }}</span>
                 <button id="logout-btn">Cerrar sesión</button>
             </div>
             {% endif %}

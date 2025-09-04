@@ -1,18 +1,43 @@
 from flask import Flask, render_template, redirect, url_for, session, request
 from flask_sqlalchemy import SQLAlchemy
 from functools import wraps
+from dotenv import load_dotenv
+from functools import wraps
+from flask import request, jsonify
+from app.utils.jwt_utils import decode_token
 
 db = SQLAlchemy()
 
-def login_required(f):
+# B. G. L. 04/09/2025 
+def jwt_required(f):
     @wraps(f)
     def decorated_function(*args, **kwargs):
-        if not session.get("salesman_id"):
-            return redirect(url_for("auth.login_page"))
+        # 1) B. G. L. 04/09/2025 Intentar Authorization: Bearer <token>
+        auth_header = request.headers.get("Authorization", "")
+        token = None
+        if auth_header.startswith("Bearer "):
+            token = auth_header.split(" ", 1)[1].strip()
+        # 2) B. G. L. 04/09/2025 Si no hay header, intentar cookie
+        if not token:
+            token = request.cookies.get("access_token")
+
+        payload = decode_token(token) if token else None
+        if not payload:
+            # B. G. L. 04/09/2025 Si el cliente quiere HTML, redigir al login. Si quiere JSON, devolver 401.
+            wants_html = request.accept_mimetypes.accept_html and not request.accept_mimetypes.accept_json
+            if wants_html or request.method == "GET":
+                return redirect(url_for("auth.login_page"))
+            return jsonify({"error": "Token inválido o expirado"}), 401
+
+        # B. G. L. 04/09/2025 Adjuntar user al request
+        request.user = payload
         return f(*args, **kwargs)
     return decorated_function
 
+# B. G. L. 04/09/2025 Crear la app
 def create_app():
+    # B. G. L. 04/09/2025 Cargar variables de entorno
+    load_dotenv()
     app = Flask(__name__)
     app.config.from_object("app.config.Config")
     db.init_app(app)
@@ -36,7 +61,7 @@ def create_app():
 
     # B. G. L. 03/09/2025 Rutas frontend protegidas con login_required
     @app.route("/")
-    @login_required
+    @jwt_required
     def index():
         products = Product.query.all()
         customers = Customer.query.all()
@@ -47,22 +72,22 @@ def create_app():
             for p in products
         ]
 
-        return render_template("orders.html", products=products_list, customers=customers, salespeople=salespeople)
+        return render_template("orders.html", products=products_list, customers=customers, salespeople=salespeople, user=request.user)
 
     @app.route("/customers")
-    @login_required
+    @jwt_required
     def customers_page():
         customers = Customer.query.all()
         return render_template("customers.html", customers=customers)
     
     @app.route("/products")
-    @login_required
+    @jwt_required
     def products_page():
         products = Product.query.all()
         return render_template("products.html", products=products)
     
     @app.route("/salespeople")
-    @login_required
+    @jwt_required
     def salespeople_page():
         salespeople = Salesperson.query.all()
         return render_template("salespeople.html", salespeople=salespeople)

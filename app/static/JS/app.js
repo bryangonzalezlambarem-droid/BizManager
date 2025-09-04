@@ -39,12 +39,13 @@ document.addEventListener("DOMContentLoaded", () => {
             try {
                 const res = await fetch("/auth/logout", {
                     method: "POST",
-                    headers: { "Content-Type": "application/json" }
+                    headers: { "Content-Type": "application/json" },
+                    credentials: "same-origin" // B. G. L 03/09/2025  necesario para enviar cookie
                 });
 
                 if (!res.ok) throw new Error("Error al cerrar sesión");
 
-                // B. G. L 03/09/2025 Redirigir al login
+                // B. G. L 03/09/2025  Redirigir al login
                 window.location.href = "/auth/login";
             } catch (err) {
                 showMessage(err.message, "error");
