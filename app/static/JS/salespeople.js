@@ -25,7 +25,8 @@ document.addEventListener("DOMContentLoaded", () => {
             <button type="button" id="cancel-form">Cancelar</button>
         </form>
     `;
-    document.body.appendChild(formContainer);
+    const mainContent = document.querySelector("main > div");
+    mainContent.appendChild(formContainer);
 
     const form = document.getElementById("salesperson-form");
     const cancelBtn = document.getElementById("cancel-form");

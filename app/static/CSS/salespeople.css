@@ -89,3 +89,67 @@ h1 {
 #salespeople-table .btn-delete:hover {
     background: rgba(239, 68, 68, 0.25);
 }
+#salesperson-form-container {
+    margin-top: 2rem;
+    background: var(--color-surface);
+    backdrop-filter: blur(8px);
+    padding: 1.5rem;
+    border-radius: var(--radius);
+    box-shadow: var(--shadow);
+    border: 1px solid var(--color-border);
+    display: none;
+}
+#salesperson-form-container h3 {
+    margin-bottom: 1rem;
+    color: #f59e0b; /* B. G. L. 03/09/2025 dorado */
+    text-shadow: 0 0 6px rgba(245, 158, 11, 0.5);
+}
+#salesperson-form label {
+    display: block;
+    margin: 0.8rem 0;
+    font-weight: 500;
+    color: var(--color-text);
+}
+#salesperson-form input {
+    width: 100%;
+    padding: 0.6rem 0.8rem;
+    border-radius: var(--radius);
+    border: 1px solid var(--color-border);
+    background: rgba(255, 255, 255, 0.07);
+    color: var(--color-text);
+    transition: var(--transition);
+}
+#salesperson-form input:focus {
+    outline: none;
+    border-color: #f59e0b; /* B. G. L. 03/09/2025 dorado */
+    box-shadow: 0 0 8px rgba(245, 158, 11, 0.6);
+}
+#salesperson-form button {
+    margin-top: 1rem;
+    padding: 0.6rem 1.2rem;
+    border-radius: var(--radius);
+    border: none;
+    cursor: pointer;
+    font-weight: 600;
+    transition: var(--transition);
+}
+/* B. G. L. 03/09/2025 Boton Guardar */
+#salesperson-form button[type="submit"] {
+    background: linear-gradient(90deg, #f59e0b, #ef4444); /* B. G. L. 03/09/2025 dorado → rojo */
+    color: #fff;
+    margin-right: 1rem;
+    box-shadow: var(--shadow);
+}
+#salesperson-form button[type="submit"]:hover {
+    transform: scale(1.05);
+    box-shadow: 0 0 15px #f59e0b;
+}
+/* B. G. L. 03/09/2025 Boton Cancelar */
+#salesperson-form #cancel-form {
+    background: rgba(255, 255, 255, 0.08);
+    color: var(--color-text);
+    border: 1px solid var(--color-border);
+}
+#salesperson-form #cancel-form:hover {
+    background: rgba(255, 255, 255, 0.15);
+}
