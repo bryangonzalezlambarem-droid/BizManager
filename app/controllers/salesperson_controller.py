@@ -1,5 +1,5 @@
 from flask import Blueprint, request, jsonify
-from sqlalchemy.exc import SQLAlchemyError
+from sqlalchemy.exc import SQLAlchemyError, IntegrityError
 from app import db
 from app.models.salesperson import Salesperson
 import re
@@ -21,6 +21,9 @@ def sanitize_input(value):
 def create_salesperson():
     try:
         data = request.get_json()
+        if not data:
+            return jsonify({"error": "No se enviaron datos"}), 400
+
         required_fields = ["name", "email", "phone", "password"]
         for field in required_fields:
             if field not in data or not data[field]:
@@ -50,8 +53,14 @@ def create_salesperson():
 
         db.session.add(new_salesperson)
         db.session.commit()
-        return jsonify({"message": "Vendedor creado exitosamente", "salesman_id": new_salesperson.salesman_id}), 201
+        return jsonify({
+            "message": "Vendedor creado exitosamente",
+            "salesman_id": new_salesperson.salesman_id
+        }), 201
 
+    except IntegrityError as e:
+        db.session.rollback()
+        return jsonify({"error": "Ya existe un vendedor con este email", "details": str(e)}), 409
     except SQLAlchemyError as e:
         db.session.rollback()
         return jsonify({"error": "Error en la base de datos", "details": str(e)}), 500
@@ -108,6 +117,9 @@ def update_salesperson(salesman_id):
         salesperson = Salesperson.query.get_or_404(salesman_id)
         data = request.get_json()
 
+        if not data:
+            return jsonify({"error": "No se enviaron datos para actualizar"}), 400
+
         if "name" in data and data["name"]:
             salesperson.name = sanitize_input(data["name"])
 
@@ -131,6 +143,9 @@ def update_salesperson(salesman_id):
         db.session.commit()
         return jsonify({"message": "Vendedor actualizado correctamente"}), 200
 
+    except IntegrityError as e:
+        db.session.rollback()
+        return jsonify({"error": "El email ya está registrado en otro vendedor", "details": str(e)}), 409
     except SQLAlchemyError as e:
         db.session.rollback()
         return jsonify({"error": "Error en la base de datos", "details": str(e)}), 500

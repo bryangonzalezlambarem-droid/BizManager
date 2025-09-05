@@ -1,8 +1,9 @@
-from flask import Blueprint, request, jsonify, session
+from flask import Blueprint, request, jsonify
 from sqlalchemy.exc import SQLAlchemyError
 from app import db
 from app.models.product import Product
 from markupsafe import escape
+from app import jwt_required
 
 # B. G. L. 25/08/2025 Crear blueprint para la tabla Product
 product_bp = Blueprint("product_bp", __name__)
@@ -13,8 +14,9 @@ def sanitize_input(value):
         return escape(value.strip())
     return value
 
-# B. G. L. 25/08/2025 Crear producto
+# B. G. L. 25/08/2025 Crear producto (requiere login con JWT)
 @product_bp.route("/", methods=["POST"])
+@jwt_required
 def create_product():
     try:
         data = request.get_json()
@@ -30,10 +32,10 @@ def create_product():
         if not isinstance(data["stock"], int) or data["stock"] < 0:
             return jsonify({"error": "El stock debe ser un número entero positivo"}), 400
 
-        # Obtener salesman_id desde sesión
-        salesman_id = session.get("salesman_id")
-        if not salesman_id or not isinstance(salesman_id, int):
-            return jsonify({"error": "Debes iniciar sesión para crear un producto"}), 401
+        # B. G. L. 05/09/2025 Obtener salesman_id desde JWT en lugar de session
+        salesman_id = request.user.get("salesman_id")
+        if not salesman_id:
+            return jsonify({"error": "Token inválido, falta salesman_id"}), 401
 
         new_product = Product(
             name=sanitize_input(data["name"]),
@@ -95,6 +97,7 @@ def get_product(product_id):
 
 # B. G. L. 25/08/2025 Actualizar producto
 @product_bp.route("/<int:product_id>", methods=["PUT"])
+@jwt_required
 def update_product(product_id):
     try:
         if product_id <= 0:
@@ -127,10 +130,11 @@ def update_product(product_id):
             except (ValueError, TypeError):
                 return jsonify({"error": "El stock debe ser un número entero"}), 400
 
-        if "salesman_id" in data:
-            if not isinstance(data["salesman_id"], int) or data["salesman_id"] <= 0:
-                return jsonify({"error": "salesman_id inválido"}), 400
-            product.salesman_id = data["salesman_id"]
+        # B. G. L. 05/09/2025 Forzar que el vendedor autenticado sea el dueño del update
+        salesman_id = request.user.get("salesman_id")
+        if not salesman_id:
+            return jsonify({"error": "Token inválido"}), 401
+        product.salesman_id = salesman_id
 
         db.session.commit()
         return jsonify({"message": "Producto actualizado correctamente"}), 200
@@ -145,12 +149,19 @@ def update_product(product_id):
 
 # B. G. L. 25/08/2025 Eliminar producto
 @product_bp.route("/<int:product_id>", methods=["DELETE"])
+@jwt_required
 def delete_product(product_id):
     try:
         if product_id <= 0:
             return jsonify({"error": "ID inválido"}), 400
 
         product = Product.query.get_or_404(product_id)
+
+        # B. G. L. 05/09/2025 Validar que el vendedor autenticado sea el dueño
+        salesman_id = request.user.get("salesman_id")
+        if not salesman_id or product.salesman_id != salesman_id:
+            return jsonify({"error": "No tienes permiso para eliminar este producto"}), 403
+
         db.session.delete(product)
         db.session.commit()
         return jsonify({"message": "Producto eliminado"}), 200

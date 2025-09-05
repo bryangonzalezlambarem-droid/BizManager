@@ -92,30 +92,48 @@ def create_order():
         return jsonify({"error": "Error interno", "details": str(e)}), 500
 
 
-# B. G. L. 29/08/2025 Obtener todos los pedidos
+# B. G. L. 29/08/2025 Obtener todos los pedidos (con paginación)
 @order_bp.route("/", methods=["GET"])
 def get_orders():
-    orders = Order.query.all()
-    return jsonify([
-        {
-            "order_id": o.order_id,
-            "customer_id": o.customer_id,
-            "order_date": o.order_date,
-            "status": o.status,
-            "total_amount": float(o.total_amount),
-            "details": [
-                {
-                    "detail_id": d.detail_id,
-                    "product_id": d.product_id,
-                    "salesman_id": d.salesman_id,
-                    "quantity": d.quantity,
-                    "unit_price": float(d.unit_price)
-                }
-                for d in o.order_details
-            ]
-        }
-        for o in orders
-    ]), 200
+    try:
+        page = request.args.get('page', 1, type=int)
+        per_page = request.args.get('per_page', 10, type=int)
+
+        if page < 1 or per_page < 1 or per_page > 100:
+            return jsonify({"error": "Parámetros de paginación inválidos"}), 400
+
+        pagination = Order.query.paginate(page=page, per_page=per_page, error_out=False)
+        orders = pagination.items
+
+        result = [
+            {
+                "order_id": o.order_id,
+                "customer_id": o.customer_id,
+                "order_date": o.order_date.isoformat() if o.order_date else None,
+                "status": o.status,
+                "total_amount": float(o.total_amount),
+                "details": [
+                    {
+                        "detail_id": d.detail_id,
+                        "product_id": d.product_id,
+                        "salesman_id": d.salesman_id,
+                        "quantity": d.quantity,
+                        "unit_price": float(d.unit_price)
+                    }
+                    for d in o.order_details
+                ]
+            }
+            for o in orders
+        ]
+
+        return jsonify({
+            "orders": result,
+            "total": pagination.total,
+            "pages": pagination.pages,
+            "current_page": pagination.page
+        }), 200
+    except Exception as e:
+        return jsonify({"error": "Error al obtener pedidos", "details": str(e)}), 500
 
 
 # B. G. L. 29/08/2025 Obtener pedido por ID
@@ -124,24 +142,27 @@ def get_order(order_id):
     if order_id <= 0:
         return jsonify({"error": "order_id inválido"}), 400
 
-    order = Order.query.get_or_404(order_id)
-    return jsonify({
-        "order_id": order.order_id,
-        "customer_id": order.customer_id,
-        "order_date": order.order_date,
-        "status": order.status,
-        "total_amount": float(order.total_amount),
-        "details": [
-            {
-                "detail_id": d.detail_id,
-                "product_id": d.product_id,
-                "salesman_id": d.salesman_id,
-                "quantity": d.quantity,
-                "unit_price": float(d.unit_price)
-            }
-            for d in order.order_details
-        ]
-    }), 200
+    try:
+        order = Order.query.get_or_404(order_id)
+        return jsonify({
+            "order_id": order.order_id,
+            "customer_id": order.customer_id,
+            "order_date": order.order_date.isoformat() if order.order_date else None,
+            "status": order.status,
+            "total_amount": float(order.total_amount),
+            "details": [
+                {
+                    "detail_id": d.detail_id,
+                    "product_id": d.product_id,
+                    "salesman_id": d.salesman_id,
+                    "quantity": d.quantity,
+                    "unit_price": float(d.unit_price)
+                }
+                for d in order.order_details
+            ]
+        }), 200
+    except Exception as e:
+        return jsonify({"error": "Error al obtener pedido", "details": str(e)}), 500
 
 
 # B. G. L. 29/08/2025 Cambiar el estado de un pedido y guardar historial
@@ -185,6 +206,9 @@ def update_order_status(order_id):
     except SQLAlchemyError as e:
         db.session.rollback()
         return jsonify({"error": "Error en la base de datos", "details": str(e)}), 500
+    except Exception as e:
+        db.session.rollback()
+        return jsonify({"error": "Error interno", "details": str(e)}), 500
 
 
 # B. G. L. 29/08/2025 Obtener historial de un pedido
@@ -193,18 +217,21 @@ def get_order_history(order_id):
     if order_id <= 0:
         return jsonify({"error": "order_id inválido"}), 400
 
-    history = OrderStatusHistory.query.filter_by(order_id=order_id).all()
-    return jsonify([
-        {
-            "history_id": h.history_id,
-            "order_id": h.order_id,
-            "old_status": h.old_status,
-            "new_status": h.new_status,
-            "change_date": h.change_date,
-            "changed_by": h.changed_by
-        }
-        for h in history
-    ]), 200
+    try:
+        history = OrderStatusHistory.query.filter_by(order_id=order_id).all()
+        return jsonify([
+            {
+                "history_id": h.history_id,
+                "order_id": h.order_id,
+                "old_status": h.old_status,
+                "new_status": h.new_status,
+                "change_date": h.change_date.isoformat() if h.change_date else None,
+                "changed_by": h.changed_by
+            }
+            for h in history
+        ]), 200
+    except Exception as e:
+        return jsonify({"error": "Error al obtener historial", "details": str(e)}), 500
 
 
 # B. G. L. 03/09/2025 Eliminar un pedido y sus detalles
