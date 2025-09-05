@@ -78,18 +78,18 @@ def create_app():
     @jwt_required
     def customers_page():
         customers = Customer.query.all()
-        return render_template("customers.html", customers=customers)
+        return render_template("customers.html", customers=customers, user=request.user)
     
     @app.route("/products")
     @jwt_required
     def products_page():
         products = Product.query.all()
-        return render_template("products.html", products=products)
+        return render_template("products.html", products=products, user=request.user)
     
     @app.route("/salespeople")
     @jwt_required
     def salespeople_page():
         salespeople = Salesperson.query.all()
-        return render_template("salespeople.html", salespeople=salespeople)
+        return render_template("salespeople.html", salespeople=salespeople, user=request.user)
 
     return app
