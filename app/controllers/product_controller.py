@@ -14,7 +14,7 @@ def sanitize_input(value):
         return escape(value.strip())
     return value
 
-# B. G. L. 25/08/2025 Crear producto (requiere login con JWT)
+# B. G. L. 05/09/2025 Crear producto con salesman_id desde JWT
 @product_bp.route("/", methods=["POST"])
 @jwt_required
 def create_product():
@@ -32,10 +32,10 @@ def create_product():
         if not isinstance(data["stock"], int) or data["stock"] < 0:
             return jsonify({"error": "El stock debe ser un número entero positivo"}), 400
 
-        # B. G. L. 05/09/2025 Obtener salesman_id desde JWT en lugar de session
-        salesman_id = request.user.get("salesman_id")
+        # B. G. L. 05/09/2025 Obtener user_id desde el JWT
+        salesman_id = request.user.get("user_id")
         if not salesman_id:
-            return jsonify({"error": "Token inválido, falta salesman_id"}), 401
+            return jsonify({"error": "Token inválido, falta user_id"}), 401
 
         new_product = Product(
             name=sanitize_input(data["name"]),

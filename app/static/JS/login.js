@@ -122,6 +122,7 @@ document.addEventListener("DOMContentLoaded", () => {
             });
 
             const data = await res.json();
+            localStorage.setItem("token", data.token); // 🔑 guardar token
 
             if (!res.ok) {
                 throw new Error(data.error || "Error al iniciar sesión");

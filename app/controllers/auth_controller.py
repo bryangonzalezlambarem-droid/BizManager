@@ -40,6 +40,7 @@ def login():
         # B. G. L 03/09/2025 Respuesta exitosa
         resp_data = {
             "message": "Login exitoso",
+            "token": token,
             "user": {
                 "id": salesperson.salesman_id,
                 "name": salesperson.name,

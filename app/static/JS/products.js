@@ -16,11 +16,15 @@ document.addEventListener("DOMContentLoaded", () => {
     const btnNewProduct = document.getElementById("btn-new-product");
     const btnCancelProduct = document.getElementById("product-cancel-btn");
 
+    const token = localStorage.getItem("token"); // B. G. L. 05/09/2025 Recuperar token guardado en login
+
     // B. G. L. 25/08/2025 Cargar productos al inicio
     async function loadProducts() {
         try {
             tableBody.innerHTML = "";
-            const res = await fetch("/api/products"); // B. G. L. 03/09/2025 final para que coincida con backend
+            const res = await fetch("/api/products", {
+                headers: { "Authorization": `Bearer ${token}` }
+            });
             if (!res.ok) throw new Error("Error al cargar productos");
             const products = await res.json();
             
@@ -47,13 +51,15 @@ document.addEventListener("DOMContentLoaded", () => {
         }
     }
 
-
     // B. G. L. 25/08/2025 Crear producto
     async function createProduct(product) {
         try {
             const res = await fetch("/api/products/", {
                 method: "POST",
-                headers: { "Content-Type": "application/json"},
+                headers: { 
+                    "Content-Type": "application/json",
+                    "Authorization": `Bearer ${token}`
+                },
                 body: JSON.stringify(product)
             });
             const data = await res.json();
@@ -69,7 +75,10 @@ document.addEventListener("DOMContentLoaded", () => {
     // B. G. L. 25/08/2025 Eliminar producto
     async function deleteProduct(id) {
         try {
-            const res = await fetch(`/api/products/${id}`, { method: "DELETE" });
+            const res = await fetch(`/api/products/${id}`, { 
+                method: "DELETE",
+                headers: { "Authorization": `Bearer ${token}` }
+            });
             const data = await res.json();
             if (!res.ok) throw new Error(data.error || "Error al eliminar producto");
             alert("Producto eliminado exitosamente");
@@ -95,7 +104,9 @@ document.addEventListener("DOMContentLoaded", () => {
         }
 
         if (e.target.classList.contains("btn-view")) {
-            fetch(`/api/products/${id}`)
+            fetch(`/api/products/${id}`, {
+                headers: { "Authorization": `Bearer ${token}` }
+            })
                 .then(res => {
                     if (!res.ok) {
                         throw new Error(`Error ${res.status}: Producto no encontrado`);
@@ -136,7 +147,9 @@ document.addEventListener("DOMContentLoaded", () => {
     }
 
     function editProductForm(id) {
-        fetch(`/api/products/${id}`)
+        fetch(`/api/products/${id}`, {
+            headers: { "Authorization": `Bearer ${token}` }
+        })
             .then(res => res.json())
             .then(p => {
                 productIdField.value = p.product_id;
@@ -164,20 +177,30 @@ document.addEventListener("DOMContentLoaded", () => {
         const method = id ? "PUT" : "POST";
 
         try {
+            console.log("DEBUG submit data:", data); // B. G. L. 05/09/2025
+            console.log("DEBUG URL:", url, "Method:", method); // B. G. L. 05/09/2025
+            console.log("DEBUG Token usado:", token); // B. G. L. 05/09/2025
+
             const res = await fetch(url, {
                 method,
-                headers: { "Content-Type": "application/json" },
+                headers: { 
+                    "Content-Type": "application/json",
+                    "Authorization": `Bearer ${token}`
+                },
                 body: JSON.stringify(data)
             });
+
             const resp = await res.json();
             if (!res.ok) throw new Error(resp.error || "Error interno");
             showMessage(successContainer, resp.message || "Operación realizada correctamente");
             formContainer.style.display = "none";
             loadProducts();
         } catch (err) {
+            console.error("DEBUG Error en submit:", err); // 👀
             showMessage(errorContainer, err.message);
         }
     });
+
 
     // B. G. L. 25/08/2025 Cargar todo al inicio
     loadProducts();
